@@ -41,9 +41,9 @@ services:
     entrypoint: >
       /bin/sh -c "
       /usr/bin/mc alias set myminio http://minio:9000 ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY};
-      /usr/bin/mc mb myminio/sweet-bucket;
-      /usr/bin/mc policy set public myminio/sweet-bucket;
-      /usr/bin/mc event add myminio/sweet-bucket arn:minio:sqs::ONE:kafka --event put;
+      /usr/bin/mc mb myminio/dockey-bucket;
+      /usr/bin/mc policy set public myminio/dockey-bucket;
+      /usr/bin/mc event add myminio/dockey-bucket arn:minio:sqs::ONE:kafka --event put;
       /usr/bin/mc admin service restart myminio;
       exit 0;
       "
