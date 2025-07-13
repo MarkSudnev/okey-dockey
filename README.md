@@ -1,2 +1,4 @@
 # okey-dockey
-Inedexes for stored documents
+Vectorized inedexes for stored documents
+
+![architecture](./docs/architecture.jpg)
