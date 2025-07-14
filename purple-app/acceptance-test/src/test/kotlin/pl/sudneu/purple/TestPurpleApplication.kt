@@ -1,9 +1,11 @@
 package pl.sudneu.purple
 
-import org.http4k.server.Http4kServer
+import org.junit.jupiter.api.Test
 
 class TestPurpleApplication {
 
+  @Test
+  fun `should store vectorized document`() {
 
-
+  }
 }

@@ -10,8 +10,10 @@ dependencies {
   implementation(libs.result4k)
 
   testImplementation(libs.kotlin.test)
+  testImplementation(libs.kotest.assertions)
+  testImplementation(libs.result4k.kotest)
   testImplementation(libs.junit.jupiter.engine)
-  testImplementation(libs.http4k.kotest)
+  testImplementation(libs.junit.jupiter.params)
 }
 
 val jvmVersion: String by project
