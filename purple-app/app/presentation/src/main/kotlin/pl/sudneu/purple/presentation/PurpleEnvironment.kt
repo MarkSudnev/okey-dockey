@@ -7,6 +7,8 @@ import org.http4k.lens.secret
 import org.http4k.lens.uri
 
 object PurpleEnvironment {
+  val VEC_DATABASE_DRIVER by EnvironmentKey.nonBlankString().of().required()
+  val VEC_DATABASE_URL by EnvironmentKey.uri().of().required()
   val VEC_DATABASE_NAME by EnvironmentKey.nonBlankString().of().required()
   val VEC_DATABASE_USERNAME by EnvironmentKey.nonBlankString().of().required()
   val VEC_DATABASE_PASSWORD by EnvironmentKey.secret().of().required()

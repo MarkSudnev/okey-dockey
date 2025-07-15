@@ -9,5 +9,7 @@ dependencies {
   testImplementation(libs.http4k.client.okhttp)
   testImplementation(libs.http4k.connect.amazon.s3.fake)
   testImplementation(libs.http4k.kotest)
+  testImplementation(libs.database.h2)
+  testImplementation(libs.hikari)
   testImplementation(kotlin("test"))
 }

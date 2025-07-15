@@ -8,8 +8,12 @@ dependencies {
   implementation(libs.http4k.core)
   implementation(libs.http4k.config)
   implementation(libs.http4k.connect.amazon.s3)
-  testImplementation(libs.http4k.kotest)
+  implementation(libs.kafka.clients)
+  implementation(libs.database.postgresql)
+  implementation(libs.hikari)
 
+  testImplementation(libs.http4k.kotest)
+  testImplementation(libs.database.h2)
 }
 
 application {
