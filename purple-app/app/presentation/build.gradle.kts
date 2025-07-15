@@ -1,5 +1,5 @@
 plugins {
-  id("kotlin-common-conventions")
+  id("purple-common-conventions")
   application
 }
 
