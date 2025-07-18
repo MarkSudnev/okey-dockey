@@ -5,6 +5,7 @@ http4k-version = "6.15.1.0"
 kotest-version = "5.9.1"
 serialization-version = "2.1.21"
 result4k-versrion = "2.22.2.1"
+fabrikate-version = "1.12.2.0"
 jvm-plugin-version = "2.1.10"
 foojay-version = "0.8.0"
 kotlin-version = "2.0.21"
@@ -29,13 +30,15 @@ http4k-connect-amazon-s3 = { module = "org.http4k:http4k-connect-amazon-s3", ver
 http4k-connect-amazon-s3-fake = { module = "org.http4k:http4k-connect-amazon-s3-fake", version.ref = "http4k-version" }
 http4k-client-okhttp = { module = "org.http4k:http4k-client-okhttp", version.ref = "http4k-version" }
 kafka-clients = { module = "org.apache.kafka:kafka-clients", version.ref = "kafka-version" }
+kafka-connect-json = { module = "org.apache.kafka:connect-json", version.ref = "kafka-version" }
 kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest-version" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-version" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin-version" }
 result4k = { module = "dev.forkhandles:result4k", version.ref = "result4k-versrion" }
 result4k-kotest = { module = "dev.forkhandles:result4k-kotest", version.ref = "result4k-versrion" }
+fabrikate4k = { module = "dev.forkhandles:fabrikate4k", version.ref = "fabrikate-version" }
 database-h2 = { module = "com.h2database:h2", version.ref = "h2-version" }
-database-postgresql =  { module = "org.postgresql:postgresql", version.ref = "postgresql-version" }
+database-postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql-version" }
 hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari-version" }
 
 [plugins]
