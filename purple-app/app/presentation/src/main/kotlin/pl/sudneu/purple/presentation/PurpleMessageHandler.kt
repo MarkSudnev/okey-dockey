@@ -1,17 +1,12 @@
 package pl.sudneu.purple.presentation
 
-import dev.forkhandles.result4k.Result
-import dev.forkhandles.result4k.Success
-import org.http4k.config.Environment
+import org.apache.kafka.clients.consumer.Consumer
+import pl.sudneu.purple.domain.ReceiveDocumentMetadata
 
-typealias MessageHandler = (FileReceivedEvent) -> Result<Unit, String>
 
-fun PurpleMessageHandler(
-  environment: Environment
-): MessageHandler {
+class PurpleMessageHandler(
+  val consumer: Consumer<String, FileReceivedEvent>,
+  val receiveDocumentMetadata: ReceiveDocumentMetadata
+) {
 
-  return fun (event: FileReceivedEvent): Result<Unit, String> {
-    println("Purple Message Handler")
-    return Success(Unit)
-  }
 }

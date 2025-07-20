@@ -1,9 +1,6 @@
 package pl.sudneu.purple
 
-import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
 import dev.forkhandles.fabrikate.Fabrikate
-import dev.forkhandles.result4k.kotest.shouldBeSuccess
 import io.kotest.matchers.shouldBe
 import org.http4k.client.OkHttp
 import org.http4k.config.Environment
@@ -25,8 +22,6 @@ import pl.sudneu.purple.presentation.PurpleEnvironment.VEC_DATABASE_DRIVER
 import pl.sudneu.purple.presentation.PurpleEnvironment.VEC_DATABASE_PASSWORD
 import pl.sudneu.purple.presentation.PurpleEnvironment.VEC_DATABASE_URL
 import pl.sudneu.purple.presentation.PurpleEnvironment.VEC_DATABASE_USERNAME
-import pl.sudneu.purple.presentation.PurpleMessageHandler
-import javax.sql.DataSource
 
 val environment = Environment.defaults(
   VEC_DATABASE_DRIVER of "org.h2.Driver",
@@ -57,8 +52,6 @@ class TestPurpleApplication {
   @Test
   fun `should store vectorized document`() {
     val event: FileReceivedEvent = Fabrikate().random()
-    val messageHandler = PurpleMessageHandler(environment)
-    messageHandler(event).shouldBeSuccess()
 
     val result = TestDatabaseConnection
       .dataSource

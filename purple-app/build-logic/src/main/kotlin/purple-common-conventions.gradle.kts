@@ -14,6 +14,8 @@ dependencies {
   testImplementation(libs.result4k.kotest)
   testImplementation(libs.junit.jupiter.engine)
   testImplementation(libs.junit.jupiter.params)
+  testImplementation(libs.fabrikate4k)
+  testImplementation(libs.mockk)
 }
 
 val jvmVersion: String by project

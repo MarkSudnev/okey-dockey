@@ -11,6 +11,5 @@ dependencies {
   testImplementation(libs.http4k.kotest)
   testImplementation(libs.database.h2)
   testImplementation(libs.hikari)
-  testImplementation(libs.fabrikate4k)
   testImplementation(kotlin("test"))
 }
