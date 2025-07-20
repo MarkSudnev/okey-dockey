@@ -4,24 +4,24 @@ import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.assertions.throwables.shouldThrow
 import org.junit.jupiter.api.Test
 
-class NonBlankStringTest {
+class NonBlankStringShould {
 
   @Test
-  fun `accepts normal string`() {
+  fun `accept normal string`() {
     shouldNotThrowAny {
       NonBlankString("normal string")
     }
   }
 
   @Test
-  fun `throws when empty string is passed`() {
+  fun `throw when empty string is passed`() {
     shouldThrow<IllegalArgumentException> {
       NonBlankString("")
     }
   }
 
   @Test
-  fun `throws when blank string is passed`() {
+  fun `throw when blank string is passed`() {
     shouldThrow<IllegalArgumentException> {
       NonBlankString("    ")
     }

@@ -9,4 +9,7 @@ class PurpleMessageHandler(
   val receiveDocumentMetadata: ReceiveDocumentMetadata
 ) {
 
+  fun subscribe(topicName: String) {
+    consumer.subscribe(setOf(topicName))
+  }
 }

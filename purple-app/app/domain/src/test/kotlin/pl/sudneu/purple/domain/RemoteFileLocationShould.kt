@@ -4,12 +4,19 @@ import io.kotest.assertions.throwables.shouldThrow
 import org.junit.jupiter.api.Test
 import java.net.URI
 
-class RemoteFileLocationTest {
+class RemoteFileLocationShould {
 
   @Test
-  fun `throws when uri is blank string`() {
+  fun `throw when uri is blank string`() {
      shouldThrow<IllegalArgumentException> {
        RemoteFileLocation(URI.create("  "))
+     }
+  }
+
+  @Test
+  fun `throw when uri is empty string`() {
+     shouldThrow<IllegalArgumentException> {
+       RemoteFileLocation(URI.create(""))
      }
   }
 }

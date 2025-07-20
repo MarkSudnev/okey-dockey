@@ -4,5 +4,6 @@ interface PurpleError {
   data class FetchDocumentError(val message: String) : PurpleError
   data class EmbedDocumentError(val message: String) : PurpleError
   data class StoreDocumentError(val message: String) : PurpleError
+  data class UnexpectedError(val message: String) : PurpleError
   object UnknownError : PurpleError
 }

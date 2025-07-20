@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test
 import pl.sudneu.purple.domain.PurpleError.EmbedDocumentError
 import pl.sudneu.purple.domain.PurpleError.FetchDocumentError
 import pl.sudneu.purple.domain.PurpleError.StoreDocumentError
+import pl.sudneu.purple.domain.PurpleError.UnexpectedError
 
 class DocumentMetadataReceiverTest {
 
@@ -28,7 +29,7 @@ class DocumentMetadataReceiverTest {
   }
 
   @Test
-  fun `calls collaborators`() {
+  fun `call collaborators`() {
     val metadata: DocumentMetadata = Fabrikate().random()
     val documentMetadataHandler = DocumentMetadataReceiver(
       fetchDocument, embedDocument, storeDocument
@@ -41,7 +42,7 @@ class DocumentMetadataReceiverTest {
   }
 
   @Test
-  fun `returns fetch failure when fetch document is failed`() {
+  fun `return failure when fetch document is failed`() {
     every { fetchDocument.invoke(any()) } returns FetchDocumentError("error-message").asFailure()
 
     val metadata: DocumentMetadata = Fabrikate().random()
@@ -53,7 +54,7 @@ class DocumentMetadataReceiverTest {
   }
 
   @Test
-  fun `returns failure when embed document is failed`() {
+  fun `return failure when embed document is failed`() {
     every { embedDocument.invoke(any()) } returns EmbedDocumentError("error-message").asFailure()
 
     val metadata: DocumentMetadata = Fabrikate().random()
@@ -65,7 +66,7 @@ class DocumentMetadataReceiverTest {
   }
 
   @Test
-  fun `returns failure when store document is failed`() {
+  fun `return failure when store document is failed`() {
     every { storeDocument.invoke(any()) } returns StoreDocumentError("error-message").asFailure()
 
     val metadata: DocumentMetadata = Fabrikate().random()
@@ -75,8 +76,19 @@ class DocumentMetadataReceiverTest {
 
     documentMetadataHandler(metadata).shouldBeFailure(StoreDocumentError("error-message"))
   }
-}
 
+  @Test
+  fun `return failure when collaborators throw exception`() {
+    val fetchDocument = FetchDocument { error("error-message") }
+
+    val metadata: DocumentMetadata = Fabrikate().random()
+    val documentMetadataHandler = DocumentMetadataReceiver(
+      fetchDocument, embedDocument, storeDocument
+    )
+
+    documentMetadataHandler(metadata).shouldBeFailure(UnexpectedError("IllegalStateException: error-message"))
+  }
+}
 
 
 internal fun document(): Document = Fabrikate().random()

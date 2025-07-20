@@ -6,11 +6,11 @@ fun DocumentMetadataReceiver(
   fetchDocument: FetchDocument,
   embedDocument: EmbedDocument,
   storeDocument: StoreDocument
-): ReceiveDocumentMetadata {
-
-  return ReceiveDocumentMetadata { metadata ->
-    fetchDocument(metadata.toRemoteFileLocation())
-      .flatMap { document -> embedDocument(document) }
-      .flatMap { embeddedDocument -> storeDocument(embeddedDocument) }
+): ReceiveDocumentMetadata =
+  ReceiveDocumentMetadata { metadata ->
+    handleException {
+      fetchDocument(metadata.fileLocation)
+        .flatMap(embedDocument::invoke)
+        .flatMap(storeDocument::invoke)
+    }
   }
-}

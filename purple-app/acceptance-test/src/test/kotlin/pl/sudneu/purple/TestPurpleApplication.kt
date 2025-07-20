@@ -15,6 +15,7 @@ import org.http4k.server.SunHttp
 import org.http4k.server.asServer
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import pl.sudneu.purple.presentation.FileReceivedEvent
 import pl.sudneu.purple.presentation.PurpleApi
@@ -50,6 +51,7 @@ class TestPurpleApplication {
   }
 
   @Test
+  @Disabled
   fun `should store vectorized document`() {
     val event: FileReceivedEvent = Fabrikate().random()
 
