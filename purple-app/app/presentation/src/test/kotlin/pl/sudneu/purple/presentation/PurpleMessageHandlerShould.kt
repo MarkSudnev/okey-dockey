@@ -15,7 +15,7 @@ import io.mockk.mockk
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.consumer.MockConsumer
 import org.apache.kafka.clients.consumer.OffsetAndMetadata
-import org.apache.kafka.clients.consumer.OffsetResetStrategy
+import org.apache.kafka.clients.consumer.OffsetResetStrategy.EARLIEST
 import org.apache.kafka.common.TopicPartition
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -36,8 +36,7 @@ class PurpleMessageHandlerShould {
   private val mockedStoreDocument = mockk<StoreDocument>()
   private val topicName = "file-events"
   private val topicPartition = TopicPartition(topicName, 0)
-  private val consumer =
-    MockConsumer<String, FileReceivedEvent>(OffsetResetStrategy.EARLIEST)
+  private val consumer = MockConsumer<String, FileReceivedEvent>(EARLIEST)
   private val randomEvent: FileReceivedEvent = Fabrikate().random()
 
   @BeforeEach
@@ -90,8 +89,7 @@ class PurpleMessageHandlerShould {
 
   @Test
   fun `not commit when document metadata handler is failed`() {
-    val handler =
-      PurpleMessageHandler(consumer) { PurpleError.UnknownError.asFailure() }
+    val handler = PurpleMessageHandler(consumer) { PurpleError.UnknownError.asFailure() }
     prepareConsumer()
     consumer.schedulePollTask { sendMessage() }
     lateinit var committed: MutableMap<TopicPartition, OffsetAndMetadata>
@@ -142,6 +140,6 @@ class PurpleMessageHandlerShould {
   }
 }
 
-fun DummyDocumentStorer(storage: MutableList<EmbeddedDocument>): StoreDocument =
+internal fun DummyDocumentStorer(storage: MutableList<EmbeddedDocument>): StoreDocument =
   StoreDocument { doc -> Success(Unit).also { storage.add(doc) } }
 
