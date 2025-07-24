@@ -1,4 +1,4 @@
-package pl.sudneu.purple
+package pl.sudneu.purple.presentation
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -13,10 +13,10 @@ object TestDatabaseConnection {
   val dataSource: DataSource by lazy {
 
     HikariConfig().also {
-      it.driverClassName = environment[VEC_DATABASE_DRIVER]
-      it.jdbcUrl = environment[VEC_DATABASE_URL].toString()
-      it.username = environment[VEC_DATABASE_USERNAME]
-      it.password = environment[VEC_DATABASE_PASSWORD].toString()
+      it.driverClassName = testEnvironment[VEC_DATABASE_DRIVER]
+      it.jdbcUrl = testEnvironment[VEC_DATABASE_URL].toString()
+      it.username = testEnvironment[VEC_DATABASE_USERNAME]
+      it.password = testEnvironment[VEC_DATABASE_PASSWORD].toString()
       it.maximumPoolSize = 6
       it.isReadOnly = false
       it.transactionIsolation = "TRANSACTION_SERIALIZABLE"

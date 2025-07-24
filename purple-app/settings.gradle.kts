@@ -1,7 +1,7 @@
 
 rootProject.name = "purple-app"
 
-include("acceptance-test", "app:presentation", "app:domain")
+include("app:presentation", "app:domain", "app:infrastructure")
 
 dependencyResolutionManagement {
   repositories {

@@ -7,10 +7,7 @@ import org.apache.kafka.common.serialization.Deserializer
 class FileReceivedEventDeserializer(
   private val objectMapper: ObjectMapper = jacksonObjectMapper()
 ): Deserializer<FileReceivedEvent> {
-  override fun deserialize(
-    topic: String?,
-    data: ByteArray?
-  ): FileReceivedEvent? {
+  override fun deserialize(topic: String?, data: ByteArray?): FileReceivedEvent? {
     return data?.let { objectMapper.readValue(it, FileReceivedEvent::class.java) }
   }
 
