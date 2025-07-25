@@ -1,9 +1,8 @@
-package pl.sudneu.purple.infrastructure.opemai
+package pl.sudneu.purple.infrastructure.openai
 
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.assertions.throwables.shouldThrow
 import org.junit.jupiter.api.Test
-import pl.sudneu.purple.infrastructure.openai.OpenAiEmbeddingsRequest
 
 class OpenAiEmbeddingsRequestShould {
 

@@ -1,4 +1,4 @@
-package pl.sudneu.purple.infrastructure.opemai
+package pl.sudneu.purple.infrastructure.openai
 
 import dev.forkhandles.result4k.asSuccess
 import org.junit.jupiter.api.Test
