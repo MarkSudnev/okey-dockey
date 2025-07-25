@@ -1,4 +1,4 @@
-package pl.sudneu.purple.infrastructure
+package pl.sudneu.purple.infrastructure.aws
 
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.asFailure
@@ -15,31 +15,28 @@ import org.http4k.connect.amazon.s3.model.BucketName
 import org.http4k.core.HttpHandler
 import pl.sudneu.purple.domain.Document
 import pl.sudneu.purple.domain.FetchDocument
-import pl.sudneu.purple.domain.NonBlankString
 import pl.sudneu.purple.domain.PurpleError.FetchDocumentError
 import pl.sudneu.purple.domain.RemoteFileLocation
+import pl.sudneu.purple.domain.handleException
 
 fun AwsFetchDocument(
   credentialsProvider: CredentialsProvider,
   bucketName: BucketName,
   region: Region,
   client: HttpHandler
-): FetchDocument {
-  return FetchDocument { fileLocation: RemoteFileLocation ->
+): FetchDocument = FetchDocument { fileLocation: RemoteFileLocation ->
+  handleException {
     val bucket = S3Bucket.Http(bucketName, region, credentialsProvider, client)
     bucket[BucketKey.of(fileLocation.uri.toString())]
       .map { it?.reader()?.readText() }
       .mapFailure { err -> FetchDocumentError(err.message.orEmpty()) }
       .flatMap(String?::toDocument)
-  }
+  }.mapFailure { err -> FetchDocumentError(err.message) }
 }
 
 internal fun String?.toDocument(): Result<Document, FetchDocumentError> =
-  if (this != null) {
-    Document(NonBlankString(this)).asSuccess()
-  } else {
-    FetchDocumentError("Document is empty").asFailure()
-  }
+  this?.let { Document(it).asSuccess() }
+  ?: FetchDocumentError("Document is not found").asFailure()
 
 fun FetchDocument.Companion.withAws(
   credentialsProvider: CredentialsProvider,

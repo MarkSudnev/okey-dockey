@@ -7,7 +7,7 @@ services:
       - "8090:8090"
     volumes:
       - ./models:/root/.cache/llama.cpp/
-    command: -hf ggml-org/gemma-3-1b-it-GGUF --port 8090 --host 0.0.0.0
+    command: -hf ggml-org/gemma-3-1b-it-GGUF --embeddings --pooling mean --port 8090 --host 0.0.0.0
 
   minio:
     image: minio/minio:RELEASE.2025-04-22T22-12-26Z

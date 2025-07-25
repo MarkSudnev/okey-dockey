@@ -1,9 +1,11 @@
 package pl.sudneu.purple.domain
 
-interface PurpleError {
-  data class FetchDocumentError(val message: String) : PurpleError
-  data class EmbedDocumentError(val message: String) : PurpleError
-  data class StoreDocumentError(val message: String) : PurpleError
-  data class UnexpectedError(val message: String) : PurpleError
-  object UnknownError : PurpleError
+sealed interface PurpleError {
+  val message: String
+
+  data class FetchDocumentError(override val message: String) : PurpleError
+  data class EmbedDocumentError(override val message: String) : PurpleError
+  data class StoreDocumentError(override val message: String) : PurpleError
+  data class UnexpectedError(override val message: String) : PurpleError
+  object UnknownError : PurpleError { override val message: String = "Unknown Error" }
 }

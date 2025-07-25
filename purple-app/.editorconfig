@@ -9,7 +9,7 @@ trim_trailing_whitespace = true
 [*.kt]
 indent_style = space
 indent_size = 2
-max_line_length = 88
+max_line_length = 100
 
 [*.kts]
 indent_style = space

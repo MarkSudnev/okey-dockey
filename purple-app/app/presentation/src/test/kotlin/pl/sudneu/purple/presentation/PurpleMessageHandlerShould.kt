@@ -24,7 +24,6 @@ import pl.sudneu.purple.domain.DocumentMetadataReceiver
 import pl.sudneu.purple.domain.EmbedDocument
 import pl.sudneu.purple.domain.EmbeddedDocument
 import pl.sudneu.purple.domain.FetchDocument
-import pl.sudneu.purple.domain.NonBlankString
 import pl.sudneu.purple.domain.PurpleError
 import pl.sudneu.purple.domain.StoreDocument
 import java.util.*
@@ -41,10 +40,10 @@ class PurpleMessageHandlerShould {
 
   @BeforeEach
   fun setup() {
-    every { mockedFetchDocument.invoke(any()) } returns Document(NonBlankString("Hello")).asSuccess()
+    every { mockedFetchDocument.invoke(any()) } returns Document("Hello").asSuccess()
     every { mockedEmbedDocument.invoke(any()) } returns
       EmbeddedDocument(
-        NonBlankString("Hello"),
+        "Hello",
         Vector(10, 0)
       ).asSuccess()
     every { mockedStoreDocument.invoke(any()) } returns Unit.asSuccess()

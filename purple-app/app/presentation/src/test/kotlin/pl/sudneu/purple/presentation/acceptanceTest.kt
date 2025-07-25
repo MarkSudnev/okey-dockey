@@ -17,14 +17,12 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import pl.sudneu.purple.domain.Document
 import pl.sudneu.purple.domain.DocumentMetadataReceiver
 import pl.sudneu.purple.domain.EmbedDocument
 import pl.sudneu.purple.domain.EmbeddedDocument
 import pl.sudneu.purple.domain.FetchDocument
-import pl.sudneu.purple.domain.NonBlankString
 import pl.sudneu.purple.domain.StoreDocument
-import pl.sudneu.purple.infrastructure.withAws
+import pl.sudneu.purple.infrastructure.aws.withAws
 import java.util.*
 
 class PurpleApplicationTest {
@@ -83,9 +81,6 @@ class PurpleApplicationTest {
     result.row shouldBe 1
   }
 }
-
-fun DummyFetchDocument(): FetchDocument =
-  FetchDocument { Document(NonBlankString("Hello")).asSuccess() }
 
 fun DummyEmbedDocument(): EmbedDocument =
   EmbedDocument { document -> EmbeddedDocument(document.content, Vector(10)).asSuccess() }
