@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test
 import pl.sudneu.purple.domain.Document
 import pl.sudneu.purple.domain.EmbedDocument
 import pl.sudneu.purple.domain.EmbeddedDocument
+import pl.sudneu.purple.domain.EmbeddedDocumentChunk
 
 class OpenAiEmbedDocumentShould {
 
@@ -22,10 +23,10 @@ class OpenAiEmbedDocumentShould {
     val document = Document("Hac vel parturient consectetur diam porta.")
     val embedDocument = OpenAiEmbedDocument(httpClient)
 
-    embedDocument(document) shouldBeSuccess { embeddings ->
-      embeddings shouldHaveSize 1
-      embeddings.first().content shouldBe document.content
-      embeddings.first().embeddings shouldHaveSize 1152
+    embedDocument(document) shouldBeSuccess { embeddedDocument ->
+      embeddedDocument.chunks shouldHaveSize 1
+      embeddedDocument.chunks.first().content shouldBe document.content
+      embeddedDocument.chunks.first().embeddings shouldHaveSize 1152
     }
   }
 }
@@ -37,5 +38,7 @@ fun OpenAiEmbedDocument(client: HttpHandler): EmbedDocument =
   EmbedDocument { document: Document ->
     val openAiResponse = client(Request(GET, "/v1/embeddings"))
     val embeddings = openAiResponseBodyLens(openAiResponse)
-    embeddings.data.map { EmbeddedDocument(document.content, it.embedding) }.asSuccess()
+    EmbeddedDocument(embeddings.data.map {
+      EmbeddedDocumentChunk(document.content, it.embedding)
+    }).asSuccess()
   }

@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test
 import pl.sudneu.purple.domain.DocumentMetadataReceiver
 import pl.sudneu.purple.domain.EmbedDocument
 import pl.sudneu.purple.domain.EmbeddedDocument
+import pl.sudneu.purple.domain.EmbeddedDocumentChunk
 import pl.sudneu.purple.domain.FetchDocument
 import pl.sudneu.purple.domain.StoreDocument
 import pl.sudneu.purple.infrastructure.aws.withAws
@@ -83,7 +84,7 @@ class PurpleApplicationTest {
 
 fun DummyEmbedDocument(): EmbedDocument =
   EmbedDocument { document ->
-    listOf(EmbeddedDocument(document.content, emptyList())).asSuccess() }
+    EmbeddedDocument(listOf(EmbeddedDocumentChunk(document.content, emptyList()))).asSuccess() }
 
 fun DummyStoreDocument(): StoreDocument {
   return StoreDocument { Unit.asSuccess() }
