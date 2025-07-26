@@ -24,7 +24,7 @@ class DocumentMetadataReceiverTest {
   @BeforeEach
   fun setup() {
     every { fetchDocument.invoke(any()) } returns document().asSuccess()
-    every { embedDocument.invoke(any()) } returns embeddedDocument().asSuccess()
+    every { embedDocument.invoke(any()) } returns listOf(embeddedDocument()).asSuccess()
     every { storeDocument.invoke(any()) } returns Unit.asSuccess()
   }
 

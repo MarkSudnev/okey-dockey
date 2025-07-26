@@ -41,7 +41,7 @@ class PurpleMessageHandlerShould {
   fun setup() {
     every { mockedFetchDocument.invoke(any()) } returns Document("Hello").asSuccess()
     every { mockedEmbedDocument.invoke(any()) } returns
-      EmbeddedDocument("Hello", emptyList()).asSuccess()
+      listOf(EmbeddedDocument("Hello", emptyList())).asSuccess()
     every { mockedStoreDocument.invoke(any()) } returns Unit.asSuccess()
   }
 
@@ -136,5 +136,5 @@ class PurpleMessageHandlerShould {
 }
 
 internal fun DummyDocumentStorer(storage: MutableList<EmbeddedDocument>): StoreDocument =
-  StoreDocument { doc -> Success(Unit).also { storage.add(doc) } }
+  StoreDocument { docs -> Success(Unit).also { docs.forEach(storage::add) } }
 

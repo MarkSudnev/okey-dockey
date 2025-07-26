@@ -22,9 +22,10 @@ class OpenAiEmbedDocumentShould {
     val document = Document("Hac vel parturient consectetur diam porta.")
     val embedDocument = OpenAiEmbedDocument(httpClient)
 
-    embedDocument(document) shouldBeSuccess {
-      it.content shouldBe document.content
-      it.embeddings shouldHaveSize 1152
+    embedDocument(document) shouldBeSuccess { embeddings ->
+      embeddings shouldHaveSize 1
+      embeddings.first().content shouldBe document.content
+      embeddings.first().embeddings shouldHaveSize 1152
     }
   }
 }
@@ -36,5 +37,5 @@ fun OpenAiEmbedDocument(client: HttpHandler): EmbedDocument =
   EmbedDocument { document: Document ->
     val openAiResponse = client(Request(GET, "/v1/embeddings"))
     val embeddings = openAiResponseBodyLens(openAiResponse)
-    EmbeddedDocument(document.content, embeddings.data.first().embedding).asSuccess()
+    embeddings.data.map { EmbeddedDocument(document.content, it.embedding) }.asSuccess()
   }

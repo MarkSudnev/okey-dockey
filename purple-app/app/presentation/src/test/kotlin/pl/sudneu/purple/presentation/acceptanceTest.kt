@@ -82,7 +82,8 @@ class PurpleApplicationTest {
 }
 
 fun DummyEmbedDocument(): EmbedDocument =
-  EmbedDocument { document -> EmbeddedDocument(document.content, emptyList()).asSuccess() }
+  EmbedDocument { document ->
+    listOf(EmbeddedDocument(document.content, emptyList())).asSuccess() }
 
 fun DummyStoreDocument(): StoreDocument {
   return StoreDocument { Unit.asSuccess() }
