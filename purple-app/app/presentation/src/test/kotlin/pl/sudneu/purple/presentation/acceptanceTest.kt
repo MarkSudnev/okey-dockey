@@ -23,7 +23,6 @@ import pl.sudneu.purple.domain.EmbeddedDocument
 import pl.sudneu.purple.domain.FetchDocument
 import pl.sudneu.purple.domain.StoreDocument
 import pl.sudneu.purple.infrastructure.aws.withAws
-import java.util.*
 
 class PurpleApplicationTest {
 
@@ -83,7 +82,7 @@ class PurpleApplicationTest {
 }
 
 fun DummyEmbedDocument(): EmbedDocument =
-  EmbedDocument { document -> EmbeddedDocument(document.content, Vector(10)).asSuccess() }
+  EmbedDocument { document -> EmbeddedDocument(document.content, emptyList()).asSuccess() }
 
 fun DummyStoreDocument(): StoreDocument {
   return StoreDocument { Unit.asSuccess() }

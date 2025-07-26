@@ -26,7 +26,6 @@ import pl.sudneu.purple.domain.EmbeddedDocument
 import pl.sudneu.purple.domain.FetchDocument
 import pl.sudneu.purple.domain.PurpleError
 import pl.sudneu.purple.domain.StoreDocument
-import java.util.*
 
 class PurpleMessageHandlerShould {
 
@@ -42,10 +41,7 @@ class PurpleMessageHandlerShould {
   fun setup() {
     every { mockedFetchDocument.invoke(any()) } returns Document("Hello").asSuccess()
     every { mockedEmbedDocument.invoke(any()) } returns
-      EmbeddedDocument(
-        "Hello",
-        Vector(10, 0)
-      ).asSuccess()
+      EmbeddedDocument("Hello", emptyList()).asSuccess()
     every { mockedStoreDocument.invoke(any()) } returns Unit.asSuccess()
   }
 
