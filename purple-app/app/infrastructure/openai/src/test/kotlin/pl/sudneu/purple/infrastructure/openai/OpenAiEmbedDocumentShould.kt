@@ -53,12 +53,30 @@ class OpenAiEmbedDocumentShould {
     }
     embedDocument(document) shouldBeFailure PurpleError.EmbedDocumentError("some-error")
   }
+
+  @Test
+  fun `return failure when exception thrown`() {
+    val httpClient: HttpHandler = { Response(OK).body(openAiResponseBody()) }
+    val document = Document("Hac vel parturient consectetur diam porta.")
+    val embedDocument = OpenAiEmbedDocument(httpClient) {
+      error("unexpected exception")
+    }
+    embedDocument(document) shouldBeFailure PurpleError.EmbedDocumentError("IllegalStateException: unexpected exception")
+  }
+
+  @Test
+  fun `return failure when http client throws exception`() {
+    val httpClient: HttpHandler = { error("unexpected exception") }
+    val document = Document("Hac vel parturient consectetur diam porta.")
+    val embedDocument = OpenAiEmbedDocument(httpClient, DummyDocumentSplitter())
+
+    embedDocument(document) shouldBeFailure PurpleError.EmbedDocumentError("IllegalStateException: unexpected exception")
+  }
 }
 
 private fun openAiResponseBody(): String =
   ClassLoader.getSystemResource("open-ai-embeddings-response.json").readText()
 
-private fun DummyDocumentSplitter(): SplitDocument {
-  return SplitDocument {document: Document ->  listOf(document.content.value, document.content.value).asSuccess() }
-}
+private fun DummyDocumentSplitter(): SplitDocument =
+  SplitDocument { document: Document ->  listOf(document.content.value, document.content.value).asSuccess() }
 
