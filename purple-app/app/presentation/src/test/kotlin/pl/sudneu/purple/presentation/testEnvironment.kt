@@ -19,7 +19,7 @@ val testEnvironment = Environment.defaults(
   AWS_ACCESS_KEY_ID of AccessKeyId.of("abc-123"),
   AWS_SECRET_ACCESS_KEY of SecretAccessKey.of("abc-123"),
   VEC_DATABASE_DRIVER of "org.h2.Driver",
-  VEC_DATABASE_URL of Uri.of("jdbc:h2:mem:purple"),
+  VEC_DATABASE_URL of Uri.of("jdbc:h2:mem:purple;mode=PostgreSQL"),
   VEC_DATABASE_USERNAME of "root",
   VEC_DATABASE_PASSWORD of Secret("root")
 )

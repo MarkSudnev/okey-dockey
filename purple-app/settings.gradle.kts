@@ -1,7 +1,14 @@
 
 rootProject.name = "purple-app"
 
-include("app:presentation", "app:domain", "app:infrastructure:aws", "app:infrastructure:openai")
+include(
+  "app:shared",
+  "app:presentation",
+  "app:domain",
+  "app:infrastructure:aws",
+  "app:infrastructure:openai",
+  "app:infrastructure:postgresql"
+)
 
 dependencyResolutionManagement {
   repositories {
