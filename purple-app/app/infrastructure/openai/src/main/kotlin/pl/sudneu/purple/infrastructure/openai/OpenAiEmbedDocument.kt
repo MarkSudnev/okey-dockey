@@ -37,13 +37,12 @@ fun OpenAiEmbedDocument(client: HttpHandler, splitDocument: SplitDocument): Embe
 
 private fun HttpHandler.getEmbeddings(
   request: OpenAiEmbeddingsRequest
-): Result<OpenAiEmbeddingsResponse, PurpleError.EmbedDocumentError> {
-  return resultFrom {
+): Result<OpenAiEmbeddingsResponse, PurpleError.EmbedDocumentError> =
+  resultFrom {
     this(Request(GET, "/v1/embeddings").with(openAiRequestBodyLens of request))
   }
     .mapFailure { e -> PurpleError.EmbedDocumentError("${e::class.simpleName}: ${e.message}") }
     .flatMap { response ->
-    if (response.status.successful) openAiResponseBodyLens(response).asSuccess()
-    else PurpleError.EmbedDocumentError(response.bodyString()).asFailure()
-  }
-}
+      if (response.status.successful) openAiResponseBodyLens(response).asSuccess()
+      else PurpleError.EmbedDocumentError(response.bodyString()).asFailure()
+    }
