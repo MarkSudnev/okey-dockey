@@ -46,3 +46,5 @@ private fun HttpHandler.getEmbeddings(
       if (response.status.successful) openAiResponseBodyLens(response).asSuccess()
       else PurpleError.EmbedDocumentError(response.bodyString()).asFailure()
     }
+
+fun EmbedDocument.Companion.withOpenAi(client: HttpHandler, splitDocument: SplitDocument) = OpenAiEmbedDocument(client, splitDocument)
