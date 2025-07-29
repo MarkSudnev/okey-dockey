@@ -14,6 +14,7 @@ h2-version = "2.2.224"
 postgresql-version = "42.7.7"
 hikari-version = "6.3.0"
 jackson-kotlin-version = "2.19.1"
+testcontainers-version = "1.21.3"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit5" }
@@ -42,6 +43,7 @@ database-h2 = { module = "com.h2database:h2", version.ref = "h2-version" }
 database-postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql-version" }
 hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari-version" }
 jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson-kotlin-version" }
+testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers-version" }
 
 [plugins]
 jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jvm-plugin-version" }
