@@ -1,44 +1,51 @@
 package pl.sudneu.purple.infrastructure.postgresql
 
+import com.pgvector.PGvector
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import dev.forkhandles.result4k.asSuccess
+import dev.forkhandles.result4k.kotest.shouldBeFailure
 import dev.forkhandles.result4k.kotest.shouldBeSuccess
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.testcontainers.containers.PostgreSQLContainer
 import pl.sudneu.purple.domain.EmbeddedDocument
 import pl.sudneu.purple.domain.EmbeddedDocumentChunk
-import pl.sudneu.purple.domain.StoreDocument
-import java.sql.Types
-import java.util.UUID
+import pl.sudneu.purple.domain.PurpleError.StoreDocumentError
 import javax.sql.DataSource
 import kotlin.random.Random
 
+const val vectorSize = 1152
 
+@DisabledIfEnvironmentVariable(named = "CI", matches = "true")
 class PostgresqlStoreDocumentShould {
 
+
   private val datasource: DataSource by lazy {
-    HikariConfig().also {
-      it.driverClassName = "org.postgresql.Driver"
-      it.jdbcUrl = pgVectorContainer.jdbcUrl
-      it.username = pgVectorContainer.username
-      it.password = pgVectorContainer.password
-      it.maximumPoolSize = 6
-      it.isReadOnly = false
+    HikariConfig().also { config ->
+      config.driverClassName = "org.postgresql.Driver"
+      config.jdbcUrl = pgVectorContainer.jdbcUrl
+      config.username = pgVectorContainer.username
+      config.password = pgVectorContainer.password
+      config.maximumPoolSize = 6
+      config.isReadOnly = false
     }.let { HikariDataSource(it) }
   }
 
   @BeforeEach
   fun setup() {
     datasource.connection.use { connection ->
-      connection.createStatement().execute("CREATE EXTENSION vector;")
+      connection.createStatement().execute("CREATE EXTENSION IF NOT EXISTS vector;")
       connection.createStatement().execute(
-        "CREATE TABLE IF NOT EXISTS documents (id VARCHAR PRIMARY KEY, content VARCHAR NOT NULL, embedding vector(1152) NOT NULL);"
+        """CREATE TABLE IF NOT EXISTS documents (
+        id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+        content VARCHAR NOT NULL,
+        embedding vector($vectorSize) NOT NULL);"""
       )
     }
   }
@@ -52,18 +59,35 @@ class PostgresqlStoreDocumentShould {
 
   @Test
   fun `store document in database`() {
-    val embeddedDocument =
-      EmbeddedDocument(listOf(EmbeddedDocumentChunk("Hello", embeddings)))
+    val embeddedDocument = EmbeddedDocument(
+      listOf(EmbeddedDocumentChunk("Hello", randomEmbeddings))
+    )
     val storeDocument = PostgresqlStoreDocument(datasource)
     storeDocument(embeddedDocument).shouldBeSuccess()
 
     datasource.connection.use { connection ->
+      PGvector.registerTypes(connection)
       val result = connection
         .prepareStatement("SELECT * FROM documents")
         .executeQuery()
       result.next()
       result.getString(2) shouldBe "Hello"
+      result.getObject(3, PGvector::class.java).toArray() shouldHaveSize vectorSize
     }
+  }
+
+  @Test
+  fun `return failure when vector size is invalid`() {
+    val embeddedDocument = EmbeddedDocument(
+      listOf(EmbeddedDocumentChunk(
+        "Hello",
+        listOf(0.7634587365, 0.364583)
+      ))
+    )
+    val storeDocument = PostgresqlStoreDocument(datasource)
+    storeDocument(embeddedDocument) shouldBeFailure StoreDocumentError(
+      "PSQLException: ERROR: expected $vectorSize dimensions, not 2"
+    )
   }
 
   companion object {
@@ -87,25 +111,4 @@ class PostgresqlStoreDocumentShould {
   }
 }
 
-val embeddings: List<Double> = (1..1152).map { _ -> Random.nextDouble() }
-
-fun PostgresqlStoreDocument(dataSource: DataSource): StoreDocument {
-  return StoreDocument { embeddedDocument ->
-    embeddedDocument.chunks.forEach { chunk ->
-      val id = UUID.randomUUID().toString()
-      dataSource
-        .connection.use { conn ->
-          conn.prepareStatement("INSERT INTO documents (id, content, embedding) VALUES (?, ?, ?)")
-          .use { stmt ->
-            stmt.setString(1, id)
-            stmt.setString(2, chunk.content.value)
-            stmt.setObject(3, chunk.embeddings.toDoubleArray(), Types.ARRAY)
-            stmt.executeUpdate()
-          }
-        }
-    }
-    Unit.asSuccess()
-  }
-}
-
-
+val randomEmbeddings: List<Double> = (1..vectorSize).map { Random.nextDouble() }
