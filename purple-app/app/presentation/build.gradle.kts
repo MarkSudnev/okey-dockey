@@ -6,6 +6,7 @@ plugins {
 dependencies {
   implementation(project(":app:domain"))
   implementation(project(":app:infrastructure:aws"))
+  implementation(project(":app:infrastructure:openai"))
   implementation(platform(libs.http4k.bom))
   implementation(libs.http4k.core)
   implementation(libs.http4k.config)

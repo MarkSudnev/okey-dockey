@@ -13,6 +13,9 @@ import org.http4k.connect.amazon.s3.FakeS3
 import org.http4k.connect.amazon.s3.model.BucketKey
 import org.http4k.connect.amazon.s3.model.BucketName
 import org.http4k.core.HttpHandler
+import org.http4k.core.Response
+import org.http4k.core.Status.Companion.OK
+import org.http4k.routing.reverseProxy
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
@@ -24,6 +27,9 @@ import pl.sudneu.purple.domain.EmbeddedDocumentChunk
 import pl.sudneu.purple.domain.FetchDocument
 import pl.sudneu.purple.domain.StoreDocument
 import pl.sudneu.purple.infrastructure.aws.withAws
+import pl.sudneu.purple.infrastructure.openai.SplitDocument
+import pl.sudneu.purple.infrastructure.openai.placeholder
+import pl.sudneu.purple.infrastructure.openai.withOpenAi
 
 class PurpleApplicationTest {
 
@@ -32,10 +38,11 @@ class PurpleApplicationTest {
   private val documentKey = BucketKey.of("${bucketName.value}/document.txt")
   private val http: HttpHandler = FakeS3()
   private val credentialsProvider = { AwsCredentials("accesskey", "secret") }
+  private val openaiClient: HttpHandler = { Response(OK).body(openaiResponse()) }
 
   private val metadataReceiver = DocumentMetadataReceiver(
     fetchDocument = FetchDocument.withAws(credentialsProvider, bucketName, region, http),
-    embedDocument = DummyEmbedDocument(),
+    embedDocument = EmbedDocument.withOpenAi(openaiClient, SplitDocument.placeholder()),
     storeDocument = DummyStoreDocument()
   )
   private val topicPartition = TopicPartition("metadata-topic", 0)
@@ -82,9 +89,8 @@ class PurpleApplicationTest {
   }
 }
 
-fun DummyEmbedDocument(): EmbedDocument =
-  EmbedDocument { document ->
-    EmbeddedDocument(listOf(EmbeddedDocumentChunk(document.content, emptyList()))).asSuccess() }
+fun openaiResponse(): String =
+  ClassLoader.getSystemResource("open-ai-embeddings-response.json").readText()
 
 fun DummyStoreDocument(): StoreDocument {
   return StoreDocument { Unit.asSuccess() }
