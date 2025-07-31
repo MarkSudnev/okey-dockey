@@ -28,3 +28,5 @@ private fun Connection.executeInsert(chunk: EmbeddedDocumentChunk) {
       stmt.executeUpdate()
     }
 }
+
+fun StoreDocument.Companion.withPostgresql(dataSource: DataSource) = PostgresqlStoreDocument(dataSource)

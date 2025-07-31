@@ -7,6 +7,7 @@ dependencies {
   implementation(project(":app:domain"))
   implementation(project(":app:infrastructure:aws"))
   implementation(project(":app:infrastructure:openai"))
+  implementation(project(":app:infrastructure:postgresql"))
   implementation(platform(libs.http4k.bom))
   implementation(libs.http4k.core)
   implementation(libs.http4k.config)
@@ -18,8 +19,9 @@ dependencies {
   implementation(libs.jackson.kotlin)
 
   testImplementation(libs.http4k.kotest)
-  testImplementation(libs.database.h2)
+  testImplementation(libs.database.postgresql)
   testImplementation(libs.http4k.connect.amazon.s3.fake)
+  testImplementation(libs.testcontainers.postgresql)
 }
 
 application {

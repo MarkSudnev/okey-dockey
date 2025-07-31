@@ -6,6 +6,5 @@ dependencies {
   implementation(project(":app:domain"))
   implementation(libs.bundles.postgresql)
   testImplementation(libs.hikari)
-  testImplementation(libs.database.h2)
   testImplementation(libs.testcontainers.postgresql)
 }
