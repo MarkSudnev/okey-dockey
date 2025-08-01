@@ -14,4 +14,5 @@ object PurpleEnvironment {
   val VEC_DATABASE_PASSWORD by EnvironmentKey.secret().of().required()
   val KAFKA_SERVER by EnvironmentKey.uri().of().required()
   val KAFKA_TOPIC by EnvironmentKey.nonBlankString().of().required()
+  val AWS_BUCKET_NAME by EnvironmentKey.nonBlankString().of().required()
 }
