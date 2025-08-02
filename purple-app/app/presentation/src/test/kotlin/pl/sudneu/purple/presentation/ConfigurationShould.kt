@@ -2,7 +2,10 @@ package pl.sudneu.purple.presentation
 
 import com.zaxxer.hikari.HikariConfig
 import io.kotest.matchers.shouldBe
+import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.junit.jupiter.api.Test
+import pl.sudneu.purple.presentation.PurpleEnvironment.KAFKA_BOOTSTRAP_SERVERS
+import pl.sudneu.purple.presentation.PurpleEnvironment.KAFKA_GROUP_ID
 import pl.sudneu.purple.presentation.PurpleEnvironment.VEC_DATABASE_DRIVER
 import pl.sudneu.purple.presentation.PurpleEnvironment.VEC_DATABASE_PASSWORD
 import pl.sudneu.purple.presentation.PurpleEnvironment.VEC_DATABASE_URL
@@ -27,7 +30,8 @@ class ConfigurationShould {
     val properties: Properties = testEnvironment.toProperties()
 
     with(properties) {
-      
+      properties[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] shouldBe testEnvironment[KAFKA_BOOTSTRAP_SERVERS]
+      properties[ConsumerConfig.GROUP_ID_CONFIG] shouldBe testEnvironment[KAFKA_GROUP_ID]
     }
   }
 }

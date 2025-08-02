@@ -10,6 +10,7 @@ import org.http4k.connect.amazon.core.model.Region
 import org.http4k.connect.amazon.core.model.SecretAccessKey
 import org.http4k.core.Uri
 import pl.sudneu.purple.presentation.PurpleEnvironment.AWS_BUCKET_NAME
+import pl.sudneu.purple.presentation.PurpleEnvironment.KAFKA_BOOTSTRAP_SERVERS
 import pl.sudneu.purple.presentation.PurpleEnvironment.KAFKA_TOPIC
 import pl.sudneu.purple.presentation.PurpleEnvironment.VEC_DATABASE_DRIVER
 import pl.sudneu.purple.presentation.PurpleEnvironment.VEC_DATABASE_PASSWORD
@@ -24,6 +25,7 @@ val testEnvironment = Environment.defaults(
   VEC_DATABASE_URL of Uri.of("jdbc:h2:mem:purple;mode=PostgreSQL"),
   VEC_DATABASE_USERNAME of "root",
   VEC_DATABASE_PASSWORD of Secret("root"),
+  KAFKA_BOOTSTRAP_SERVERS of listOf("localhost:2092"),
   KAFKA_TOPIC of "metadata-topic",
   AWS_BUCKET_NAME of "test-bucket-name"
 )
