@@ -1,6 +1,5 @@
 package pl.sudneu.purple.presentation
 
-import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import dev.forkhandles.fabrikate.Fabrikate
 import io.kotest.matchers.shouldBe
@@ -31,6 +30,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.testcontainers.containers.PostgreSQLContainer
 import pl.sudneu.purple.domain.DocumentMetadataReceiver
 import pl.sudneu.purple.domain.EmbedDocument
@@ -49,6 +49,7 @@ import pl.sudneu.purple.presentation.PurpleEnvironment.VEC_DATABASE_URL
 import pl.sudneu.purple.presentation.PurpleEnvironment.VEC_DATABASE_USERNAME
 import javax.sql.DataSource
 
+@DisabledIfEnvironmentVariable(named = "SKIP_TEST_CONTAINERS", matches = "true")
 class PurpleApplicationTest {
 
   private val bucketName = BucketName.of(environment[AWS_BUCKET_NAME])
@@ -65,14 +66,7 @@ class PurpleApplicationTest {
   private val openaiClient: HttpHandler = { Response(OK).body(openaiResponse()) }
 
   private val datasource: DataSource by lazy {
-    HikariConfig().also { config ->
-      config.driverClassName = environment[VEC_DATABASE_DRIVER]
-      config.jdbcUrl = environment[VEC_DATABASE_URL].toString()
-      config.username = environment[VEC_DATABASE_USERNAME]
-      config.maximumPoolSize = 6
-      config.isReadOnly = false
-      environment[VEC_DATABASE_PASSWORD].use { pwd -> config.password = pwd}
-    }.let { HikariDataSource(it) }
+    HikariDataSource(environment.toHikariConfig())
   }
 
   private val metadataReceiver = DocumentMetadataReceiver(

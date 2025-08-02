@@ -16,7 +16,10 @@ class FileReceivedEventDeserializerShould {
 
   @Test
   fun `deserialize message value`() {
-    val message = ClassLoader.getSystemResource("message-example.json").readText().toByteArray()
+    val message = ClassLoader
+      .getSystemResource("message-example.json")
+      .readText()
+      .toByteArray()
     val event = deserializer.deserialize("topic", message)
 
     event.shouldNotBeNull {

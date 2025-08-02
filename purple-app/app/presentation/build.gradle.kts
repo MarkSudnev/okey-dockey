@@ -20,6 +20,7 @@ dependencies {
 
   testImplementation(libs.http4k.kotest)
   testImplementation(libs.database.postgresql)
+  testImplementation(libs.database.h2)
   testImplementation(libs.http4k.connect.amazon.s3.fake)
   testImplementation(libs.testcontainers.postgresql)
 }

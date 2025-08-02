@@ -22,7 +22,7 @@ import kotlin.random.Random
 
 const val vectorSize = 1152
 
-@DisabledIfEnvironmentVariable(named = "CI", matches = "true")
+@DisabledIfEnvironmentVariable(named = "SKIP_TEST_CONTAINERS", matches = "true")
 class PostgresqlStoreDocumentShould {
 
 
