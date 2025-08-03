@@ -2,6 +2,7 @@
 rootProject.name = "purple-app"
 
 include(
+  "logging",
   "app:shared",
   "app:presentation",
   "app:domain",
