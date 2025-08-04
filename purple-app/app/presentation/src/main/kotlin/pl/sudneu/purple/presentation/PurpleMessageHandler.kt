@@ -1,26 +1,40 @@
 package pl.sudneu.purple.presentation
 
 import dev.forkhandles.result4k.peek
+import dev.forkhandles.result4k.recover
 import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.ConsumerRecords
 import org.apache.kafka.common.errors.WakeupException
 import pl.sudneu.purple.domain.ReceiveDocumentMetadata
+import pl.sudneu.purple.logging.ApplicationEvent
+import pl.sudneu.purple.logging.ApplicationEventHappened
+import pl.sudneu.purple.logging.ApplicationEvents
+import pl.sudneu.purple.logging.ErrorHappened
+import pl.sudneu.purple.logging.FailureHappened
 import java.time.Duration
 
 
 class PurpleMessageHandler(
   val consumer: Consumer<String, FileReceivedEvent>,
-  val receiveDocumentMetadata: ReceiveDocumentMetadata
+  val receiveDocumentMetadata: ReceiveDocumentMetadata,
+  val events: ApplicationEventHappened = ApplicationEvents()
 ) {
 
   fun listen(topicName: String) {
     consumer.subscribe(setOf(topicName))
     Runtime.getRuntime().addShutdownHook(Thread { stop() })
+    events(MessageHandlerStarted)
     try {
       consume(Duration.ofMillis(100))
     } catch (_: WakeupException) {
+    } catch (exception: Exception) {
+      events(ErrorHappened(
+        exception::class.java,
+        "${exception::class.simpleName}: ${exception.message}"
+      ))
     } finally {
       consumer.close()
+      events(MessageHandlerStopped)
     }
   }
 
@@ -33,9 +47,17 @@ class PurpleMessageHandler(
   private fun handle(records: ConsumerRecords<String, FileReceivedEvent>) =
     records
       .map { it.value().toDocumentMetadata() }
-      .forEach { receiveDocumentMetadata(it).peek { consumer.commitSync() } }
+      .forEach { receiveDocumentMetadata(it)
+        .peek { consumer.commitSync() }
+        .recover { error ->
+          events(FailureHappened(error::class.java, error.message))
+        }
+      }
 
   private fun stop() {
     consumer.wakeup()
   }
 }
+
+data object MessageHandlerStarted : ApplicationEvent
+data object MessageHandlerStopped : ApplicationEvent

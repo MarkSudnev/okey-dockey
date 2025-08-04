@@ -9,10 +9,13 @@ import java.time.LocalDateTime
 
 typealias EventWriter = (String) -> Unit
 typealias TimeProvider = () -> LocalDateTime
+
 interface ApplicationEvent
 
 data object ApplicationStarted : ApplicationEvent
 data object ApplicationStopped : ApplicationEvent
+data class FailureHappened<T>(val failure: T, val reason: String) : ApplicationEvent
+data class ErrorHappened<T>(val error: T, val reason: String) : ApplicationEvent
 
 data class ApplicationEventWrapper(
   val event: String,
@@ -29,7 +32,7 @@ val purpleObjectMapper: ObjectMapper = jacksonObjectMapper()
   .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
 
 fun ApplicationEvents(
-  writer: EventWriter,
+  writer: EventWriter = ::println,
   objectMapper: ObjectMapper = purpleObjectMapper,
   timeProvider: TimeProvider = { LocalDateTime.now() }
 ): ApplicationEventHappened {
@@ -43,6 +46,3 @@ fun ApplicationEvents(
     writer(serializedEvent)
   }
 }
-
-
-

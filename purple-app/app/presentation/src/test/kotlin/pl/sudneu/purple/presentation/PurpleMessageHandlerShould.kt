@@ -9,7 +9,9 @@ import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.maps.shouldHaveKey
 import io.kotest.matchers.maps.shouldHaveSize
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.beInstanceOf
 import io.mockk.every
 import io.mockk.mockk
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -25,7 +27,11 @@ import pl.sudneu.purple.domain.EmbedDocument
 import pl.sudneu.purple.domain.EmbeddedDocument
 import pl.sudneu.purple.domain.FetchDocument
 import pl.sudneu.purple.domain.PurpleError
+import pl.sudneu.purple.domain.ReceiveDocumentMetadata
 import pl.sudneu.purple.domain.StoreDocument
+import pl.sudneu.purple.logging.ErrorHappened
+import pl.sudneu.purple.logging.FailureHappened
+import pl.sudneu.purple.logging.TestApplicationEvents
 
 class PurpleMessageHandlerShould {
 
@@ -84,7 +90,8 @@ class PurpleMessageHandlerShould {
 
   @Test
   fun `not commit when document metadata handler is failed`() {
-    val handler = PurpleMessageHandler(consumer) { PurpleError.UnknownError.asFailure() }
+    val receiveDocumentMetadata = ReceiveDocumentMetadata { PurpleError.UnknownError.asFailure() }
+    val handler = PurpleMessageHandler(consumer, receiveDocumentMetadata)
     prepareConsumer()
     consumer.schedulePollTask { sendMessage() }
     lateinit var committed: MutableMap<TopicPartition, OffsetAndMetadata>
@@ -102,6 +109,82 @@ class PurpleMessageHandlerShould {
     stopConsumer()
     handler.listen(topicPartition.topic())
     consumer.closed() shouldBe true
+  }
+
+  @Test
+  fun `emit event when handler is started`() {
+    val events = TestApplicationEvents()
+    val handler = PurpleMessageHandler(
+      consumer,
+      documentMetadataReceiver(),
+      events
+    )
+    prepareConsumer()
+    consumer.schedulePollTask { sendMessage() }
+    stopConsumer()
+    handler.listen(topicPartition.topic())
+
+    events.storage shouldContain MessageHandlerStarted
+  }
+
+  @Test
+  fun `emit event when handler is stopped`() {
+    val events = TestApplicationEvents()
+    val handler = PurpleMessageHandler(
+      consumer,
+      documentMetadataReceiver(),
+      events
+    )
+    prepareConsumer()
+    consumer.schedulePollTask { sendMessage() }
+    stopConsumer()
+    handler.listen(topicPartition.topic())
+
+    events.storage shouldContain MessageHandlerStopped
+  }
+
+  @Test
+  fun `emit event when failure happened`() {
+    val events = TestApplicationEvents()
+    val receiveDocumentMetadata = ReceiveDocumentMetadata { PurpleError.UnknownError.asFailure() }
+    val handler = PurpleMessageHandler(
+      consumer,
+      receiveDocumentMetadata,
+      events
+    )
+    prepareConsumer()
+    consumer.schedulePollTask { sendMessage() }
+    stopConsumer()
+    handler.listen(topicPartition.topic())
+
+    val event = events.storage
+      .filterIsInstance<FailureHappened<*>>()
+      .first()
+
+    event.failure shouldBe PurpleError.UnknownError::class.java
+    event.reason shouldBe "Unknown Error"
+  }
+
+  @Test
+  fun `emit event when exception happened`() {
+    val events = TestApplicationEvents()
+    val receiveDocumentMetadata = ReceiveDocumentMetadata { error("unexpected-exception") }
+    val handler = PurpleMessageHandler(
+      consumer,
+      receiveDocumentMetadata,
+      events
+    )
+    prepareConsumer()
+    consumer.schedulePollTask { sendMessage() }
+    stopConsumer()
+    handler.listen(topicPartition.topic())
+
+    val event = events.storage
+      .filterIsInstance<ErrorHappened<*>>()
+      .first()
+
+    event.error shouldBe IllegalStateException::class.java
+    event.reason shouldBe "IllegalStateException: unexpected-exception"
   }
 
   private fun documentMetadataReceiver(
