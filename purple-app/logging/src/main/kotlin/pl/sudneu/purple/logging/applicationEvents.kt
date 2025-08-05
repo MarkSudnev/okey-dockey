@@ -17,7 +17,7 @@ data object ApplicationStopped : ApplicationEvent
 data class FailureHappened<T>(val failure: T, val reason: String) : ApplicationEvent
 data class ErrorHappened<T>(val error: T, val reason: String) : ApplicationEvent
 
-data class ApplicationEventWrapper(
+private data class ApplicationEventWrapper(
   val event: String,
   val timestamp: LocalDateTime,
   val payload: ApplicationEvent

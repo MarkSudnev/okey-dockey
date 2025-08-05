@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariConfig
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.http4k.config.Environment
 import org.http4k.config.EnvironmentKey
-import org.http4k.lens.Prop
 import org.http4k.lens.csv
 import org.http4k.lens.nonBlankString
 import org.http4k.lens.of
@@ -16,7 +15,7 @@ import pl.sudneu.purple.presentation.PurpleEnvironment.VEC_DATABASE_DRIVER
 import pl.sudneu.purple.presentation.PurpleEnvironment.VEC_DATABASE_PASSWORD
 import pl.sudneu.purple.presentation.PurpleEnvironment.VEC_DATABASE_URL
 import pl.sudneu.purple.presentation.PurpleEnvironment.VEC_DATABASE_USERNAME
-import java.util.Properties
+import java.util.*
 
 object PurpleEnvironment {
   val VEC_DATABASE_DRIVER by EnvironmentKey.nonBlankString().of().required()
@@ -27,7 +26,9 @@ object PurpleEnvironment {
   val KAFKA_BOOTSTRAP_SERVERS by EnvironmentKey.csv(",").of().required()
   val KAFKA_GROUP_ID by EnvironmentKey.nonBlankString().of().optional()
   val KAFKA_TOPIC by EnvironmentKey.nonBlankString().of().required()
+  val AWS_URL_ENDPOINT by EnvironmentKey.uri().of().required()
   val AWS_BUCKET_NAME by EnvironmentKey.nonBlankString().of().required()
+  val OPEN_AI_URL_ENDPOINT by EnvironmentKey.uri().of().required()
 }
 
 fun Environment.toHikariConfig(): HikariConfig =

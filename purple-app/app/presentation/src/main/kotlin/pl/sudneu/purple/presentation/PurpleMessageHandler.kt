@@ -9,6 +9,7 @@ import pl.sudneu.purple.domain.ReceiveDocumentMetadata
 import pl.sudneu.purple.logging.ApplicationEvent
 import pl.sudneu.purple.logging.ApplicationEventHappened
 import pl.sudneu.purple.logging.ApplicationEvents
+import pl.sudneu.purple.logging.ApplicationStopped
 import pl.sudneu.purple.logging.ErrorHappened
 import pl.sudneu.purple.logging.FailureHappened
 import java.time.Duration
@@ -22,7 +23,10 @@ class PurpleMessageHandler(
 
   fun listen(topicName: String) {
     consumer.subscribe(setOf(topicName))
-    Runtime.getRuntime().addShutdownHook(Thread { stop() })
+    Runtime.getRuntime().addShutdownHook(Thread {
+      stop()
+      events(ApplicationStopped)
+    })
     events(MessageHandlerStarted)
     try {
       consume(Duration.ofMillis(100))
