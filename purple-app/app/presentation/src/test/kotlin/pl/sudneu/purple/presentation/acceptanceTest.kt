@@ -2,13 +2,14 @@ package pl.sudneu.purple.presentation
 
 import com.zaxxer.hikari.HikariDataSource
 import dev.forkhandles.fabrikate.Fabrikate
-import io.kotest.matchers.shouldBe
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.consumer.MockConsumer
 import org.apache.kafka.clients.consumer.OffsetResetStrategy.EARLIEST
 import org.apache.kafka.common.TopicPartition
 import org.http4k.aws.AwsCredentials
+import org.http4k.client.OkHttp
 import org.http4k.config.Environment
+import org.http4k.config.Port
 import org.http4k.config.Secret
 import org.http4k.connect.amazon.AWS_ACCESS_KEY_ID
 import org.http4k.connect.amazon.AWS_REGION
@@ -19,13 +20,20 @@ import org.http4k.connect.amazon.s3.S3
 import org.http4k.connect.amazon.s3.S3Bucket
 import org.http4k.connect.amazon.s3.createBucket
 import org.http4k.connect.amazon.s3.model.BucketKey
-import org.http4k.connect.amazon.s3.model.BucketName
 import org.http4k.connect.amazon.s3.putObject
 import org.http4k.core.HttpHandler
+import org.http4k.core.Method.GET
+import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
 import org.http4k.core.Uri
+import org.http4k.core.then
+import org.http4k.filter.ClientFilters
 import org.http4k.filter.debug
+import org.http4k.kotest.shouldHaveBody
+import org.http4k.kotest.shouldHaveStatus
+import org.http4k.server.SunHttp
+import org.http4k.server.asServer
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
@@ -56,15 +64,15 @@ class PurpleApplicationTest {
   private val bucketName = environment[AWS_BUCKET_NAME]
   private val region = environment[AWS_REGION]
   private val documentKey = BucketKey.of("document.txt")
-  private val http: HttpHandler = FakeS3()
+  private val awsClient: HttpHandler = FakeS3()
   private val credentialsProvider = {
     AwsCredentials(
       environment[AWS_ACCESS_KEY_ID].toString(),
       environment[AWS_SECRET_ACCESS_KEY].toString()
     )
   }
-  private val awsParameters = environment.toAwsParameters(http.debug())
-  private val s3Bucket = S3Bucket.Http(bucketName, region, credentialsProvider, http)
+  private val awsParameters = environment.toAwsParameters(awsClient)
+  private val s3Bucket = S3Bucket.Http(bucketName, region, credentialsProvider, awsClient)
   private val openaiClient: HttpHandler = { Response(OK).body(openaiResponse()) }
 
   private val datasource: DataSource by lazy {
@@ -80,13 +88,19 @@ class PurpleApplicationTest {
   private val consumer = MockConsumer<String, FileReceivedEvent>(EARLIEST)
   private val handler = PurpleMessageHandler(consumer, metadataReceiver)
 
+  private val service = PurpleApi().asServer(SunHttp(Port.RANDOM.value))
+  private val client = ClientFilters
+    .SetBaseUriFrom(Uri.of("http://localhost:${service.port()}"))
+    .then(OkHttp())
+
   private fun createBucket() {
-    val s3 = S3.Http(credentialsProvider, http)
+    val s3 = S3.Http(credentialsProvider, awsClient)
     s3.createBucket(bucketName, region)
   }
 
   @BeforeEach
   fun setup() {
+    service.start()
     consumer.updateBeginningOffsets(mutableMapOf(topicPartition to 0))
     consumer.schedulePollTask { consumer.rebalance(mutableListOf(topicPartition)) }
     datasource.connection.use { connection ->
@@ -102,7 +116,7 @@ class PurpleApplicationTest {
 
   @AfterEach
   fun teardown() {
-
+    service.stop()
   }
 
   @Test
@@ -123,17 +137,23 @@ class PurpleApplicationTest {
     }
     consumer.schedulePollTask { consumer.wakeup() }
     handler.listen(topicPartition.topic())
-    datasource.connection.use { conn ->
-      val result = conn
-        .prepareStatement("SELECT * FROM documents")
-        .executeQuery()
-      result.next()
-      result.row shouldBe 1
-    }
+
+    val response = client(Request(GET, "/api/v1/documents?q=people%20suffered%20from%20fire"))
+
+    response shouldHaveStatus OK
+    response shouldHaveBody "[$text]"
+
+//    datasource.connection.use { conn ->
+//      val result = conn
+//        .prepareStatement("SELECT * FROM documents")
+//        .executeQuery()
+//      result.next()
+//      result.row shouldBe 1
+//    }
   }
 
   companion object {
-    val pgVectorContainer = PostgreSQLContainer("pgvector/pgvector:pg16")
+    private val pgVectorContainer = PostgreSQLContainer("pgvector/pgvector:pg16")
       .withDatabaseName("dockey")
       .withUsername("root")
       .withPassword("root")
@@ -173,7 +193,7 @@ fun randomEvent(key: String): FileReceivedEvent {
   return event
 }
 
-val text = """Vector search is a method of information retrieval in which documents and
-   queries are represented as vectors instead of plain text. This numeric representation is
-   obtained by using a large, trained neural network that can convert unstructured data,
-   such as text, images, and videos, into vectors.""".trimMargin()
+val text = """Fire Department. One concertgoer was pronounced dead at the scene and 27 were
+  taken to the hospital, of 48 who suffered non-fatal injuries. The street-facing facade and the
+  upper roof structure were found on the street after the tornado. Following the collapse,
+  the lack of safety protocols despite warning became the subject of multiple lawsuits.""".trimMargin()
