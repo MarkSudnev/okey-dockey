@@ -13,20 +13,34 @@ import org.http4k.connect.amazon.s3.S3Bucket
 import org.http4k.connect.amazon.s3.model.BucketKey
 import org.http4k.connect.amazon.s3.model.BucketName
 import org.http4k.core.HttpHandler
+import org.http4k.core.Uri
 import pl.sudneu.purple.domain.Document
 import pl.sudneu.purple.domain.FetchDocument
 import pl.sudneu.purple.domain.PurpleError.FetchDocumentError
 import pl.sudneu.purple.domain.RemoteFileLocation
 import pl.sudneu.purple.domain.handleException
 
+
+data class AwsParameters(
+  val credentialsProvider: CredentialsProvider,
+  val bucketName: BucketName,
+  val region: Region,
+  val client: HttpHandler,
+  val awsUrlEndpoint: Uri?
+)
+
 fun AwsFetchDocument(
-  credentialsProvider: CredentialsProvider,
-  bucketName: BucketName,
-  region: Region,
-  client: HttpHandler
+  parameters: AwsParameters
 ): FetchDocument = FetchDocument { fileLocation: RemoteFileLocation ->
   handleException {
-    val bucket = S3Bucket.Http(bucketName, region, credentialsProvider, client)
+    val bucket = S3Bucket.Http(
+      bucketName = parameters.bucketName,
+      bucketRegion = parameters.region,
+      credentialsProvider = parameters.credentialsProvider,
+      overrideEndpoint = parameters.awsUrlEndpoint,
+      forcePathStyle = true,
+      http = parameters.client
+    )
     bucket[BucketKey.of(fileLocation.uri.toString())]
       .map { it?.reader()?.readText() }
       .mapFailure { err -> FetchDocumentError(err.message.orEmpty()) }
@@ -38,9 +52,4 @@ internal fun String?.toDocument(): Result<Document, FetchDocumentError> =
   this?.let { Document(it).asSuccess() }
   ?: FetchDocumentError("Document is not found").asFailure()
 
-fun FetchDocument.Companion.withAws(
-  credentialsProvider: CredentialsProvider,
-  bucketName: BucketName,
-  region: Region,
-  client: HttpHandler
-) = AwsFetchDocument(credentialsProvider, bucketName, region, client)
+fun FetchDocument.Companion.withAws(parameters: AwsParameters) = AwsFetchDocument(parameters)

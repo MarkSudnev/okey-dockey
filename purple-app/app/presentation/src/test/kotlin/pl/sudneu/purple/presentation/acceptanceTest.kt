@@ -25,6 +25,7 @@ import org.http4k.core.HttpHandler
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
 import org.http4k.core.Uri
+import org.http4k.filter.debug
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
@@ -52,9 +53,9 @@ import javax.sql.DataSource
 @DisabledIfEnvironmentVariable(named = "SKIP_TEST_CONTAINERS", matches = "true")
 class PurpleApplicationTest {
 
-  private val bucketName = BucketName.of(environment[AWS_BUCKET_NAME])
+  private val bucketName = environment[AWS_BUCKET_NAME]
   private val region = environment[AWS_REGION]
-  private val documentKey = BucketKey.of("${bucketName.value}/document.txt")
+  private val documentKey = BucketKey.of("document.txt")
   private val http: HttpHandler = FakeS3()
   private val credentialsProvider = {
     AwsCredentials(
@@ -62,6 +63,7 @@ class PurpleApplicationTest {
       environment[AWS_SECRET_ACCESS_KEY].toString()
     )
   }
+  private val awsParameters = environment.toAwsParameters(http.debug())
   private val s3Bucket = S3Bucket.Http(bucketName, region, credentialsProvider, http)
   private val openaiClient: HttpHandler = { Response(OK).body(openaiResponse()) }
 
@@ -70,7 +72,7 @@ class PurpleApplicationTest {
   }
 
   private val metadataReceiver = DocumentMetadataReceiver(
-    fetchDocument = FetchDocument.withAws(credentialsProvider, bucketName, region, http),
+    fetchDocument = FetchDocument.withAws(awsParameters),
     embedDocument = EmbedDocument.withOpenAi(openaiClient, SplitDocument.placeholder()),
     storeDocument = StoreDocument.withPostgresql(datasource)
   )
@@ -107,7 +109,7 @@ class PurpleApplicationTest {
   fun `should store vectorized document`() {
     createBucket()
     s3Bucket.putObject(documentKey, text.byteInputStream())
-    val event: FileReceivedEvent = randomEvent().copy(Key = documentKey.value)
+    val event: FileReceivedEvent = randomEvent(documentKey.value)
     consumer.schedulePollTask {
       consumer.addRecord(
         ConsumerRecord(
@@ -162,8 +164,14 @@ class PurpleApplicationTest {
 fun openaiResponse(): String =
   ClassLoader.getSystemResource("open-ai-embeddings-response.json").readText()
 
-fun randomEvent(): FileReceivedEvent =
-  Fabrikate().random()
+fun randomEvent(key: String): FileReceivedEvent {
+  val randomMetadata: FileMetadata = Fabrikate().random()
+  val metadata = randomMetadata.copy(key = key)
+  val s3 = FileS3(metadata)
+  val randomEvent = Fabrikate().random<FileReceivedEvent>()
+  val event = randomEvent.copy(Records = listOf(FileRecord(s3)))
+  return event
+}
 
 val text = """Vector search is a method of information retrieval in which documents and
    queries are represented as vectors instead of plain text. This numeric representation is

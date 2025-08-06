@@ -19,6 +19,7 @@ dependencies {
   implementation(libs.database.postgresql)
   implementation(libs.hikari)
   implementation(libs.jackson.kotlin)
+  implementation(libs.slf4j.simple)
 
   testImplementation(libs.http4k.kotest)
   testImplementation(libs.database.postgresql)

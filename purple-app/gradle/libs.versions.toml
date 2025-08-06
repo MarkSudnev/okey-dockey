@@ -16,6 +16,7 @@ hikari-version = "6.3.0"
 jackson-version = "2.19.1"
 testcontainers-version = "1.21.3"
 pgvector-version = "0.1.6"
+slf4j-version = "2.0.16"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test-junit5" }
@@ -46,6 +47,8 @@ database-postgresql-pgvector = { module = "com.pgvector:pgvector", version.ref =
 hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari-version" }
 jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson-version" }
 jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson-version" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j-version" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j-version" }
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers-version" }
 
 [bundles]

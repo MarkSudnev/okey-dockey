@@ -29,6 +29,14 @@ class AwsFetchDocumentShould {
   private val credentialsProvider = { AwsCredentials("accesskey", "secret") }
   private val http: HttpHandler = FakeS3()
 
+  private val awsParameters = AwsParameters(
+    credentialsProvider,
+    bucketName,
+    region,
+    http,
+    null
+  )
+
   @Test
   fun `fetch document from aws`() {
     val documentContent = "Condimentum mi vel primis pretium iaculis."
@@ -37,8 +45,7 @@ class AwsFetchDocumentShould {
     s3.createBucket(bucketName, region)
     bucket.putObject(documentKey, documentContent.byteInputStream())
     val fileLocation = RemoteFileLocation(URI.create(documentKey.value))
-    val awsFetchDocument =
-      AwsFetchDocument(credentialsProvider, bucketName, region, http)
+    val awsFetchDocument = AwsFetchDocument(awsParameters)
 
     awsFetchDocument(fileLocation) shouldBeSuccess Document(documentContent)
   }
@@ -48,8 +55,8 @@ class AwsFetchDocumentShould {
     val notAccessibleService: HttpHandler = {
       Response(SERVICE_UNAVAILABLE).body("Server is unavailable")
     }
-    val awsFetchDocument =
-      AwsFetchDocument(credentialsProvider, bucketName, region, notAccessibleService)
+    val params = awsParameters.copy(client = notAccessibleService)
+    val awsFetchDocument = AwsFetchDocument(params)
     val fileLocation = RemoteFileLocation(URI.create(documentKey.value))
 
     awsFetchDocument(fileLocation) shouldBeFailure FetchDocumentError("Server is unavailable")
@@ -59,7 +66,7 @@ class AwsFetchDocumentShould {
   fun `return failure when requested document was not found`() {
     val s3 = S3.Http(credentialsProvider, http)
     s3.createBucket(bucketName, region)
-    val awsFetchDocument = AwsFetchDocument(credentialsProvider, bucketName, region, http)
+    val awsFetchDocument = AwsFetchDocument(awsParameters)
     val fileLocation = RemoteFileLocation(URI.create(documentKey.value))
 
     awsFetchDocument(fileLocation) shouldBeFailure FetchDocumentError("Document is not found")
@@ -70,7 +77,8 @@ class AwsFetchDocumentShould {
     val s3 = S3.Http(credentialsProvider, http)
     s3.createBucket(bucketName, region)
     val anotherBucket = BucketName.of("another-bucket")
-    val awsFetchDocument = AwsFetchDocument(credentialsProvider, anotherBucket, region, http)
+    val params = awsParameters.copy(bucketName = anotherBucket)
+    val awsFetchDocument = AwsFetchDocument(params)
     val fileLocation = RemoteFileLocation(URI.create(documentKey.value))
 
     awsFetchDocument(fileLocation) shouldBeFailure FetchDocumentError("Document is not found")
@@ -79,7 +87,8 @@ class AwsFetchDocumentShould {
   @Test
   fun `return failure when exception is happened`() {
     val client: HttpHandler = { error("unexpected exception") }
-    val awsFetchDocument = AwsFetchDocument(credentialsProvider, bucketName, region, client)
+    val params = awsParameters.copy(client = client)
+    val awsFetchDocument = AwsFetchDocument(params)
     val fileLocation = RemoteFileLocation(URI.create(documentKey.value))
 
     awsFetchDocument(fileLocation) shouldBeFailure FetchDocumentError("IllegalStateException: unexpected exception")

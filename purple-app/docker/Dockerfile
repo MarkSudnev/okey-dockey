@@ -1,11 +1,11 @@
-FROM docker:28.3.3-cli-alpine3.22
+FROM gradle:8.14.3-jdk21-jammy
 
-RUN apk update && apk add openjdk21
+ENV SKIP_TEST_CONTAINERS=true
 
 COPY . /opt/purple-app
 
 WORKDIR /opt/purple-app
 
-RUN ./gradlew test
+RUN gradle build --parallel
 
 ENTRYPOINT ["gradle", "run"]

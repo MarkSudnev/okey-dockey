@@ -27,5 +27,6 @@ data class FileMetadata(
 )
 
 fun FileReceivedEvent.toDocumentMetadata(): DocumentMetadata {
-  return DocumentMetadata(EventName, RemoteFileLocation(URI(Key)))
+  val key = Records.first().s3.`object`.key
+  return DocumentMetadata(EventName, RemoteFileLocation(URI(key)))
 }

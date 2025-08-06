@@ -9,6 +9,7 @@ import dev.forkhandles.result4k.mapFailure
 import dev.forkhandles.result4k.resultFrom
 import dev.forkhandles.result4k.zip
 import org.http4k.core.HttpHandler
+import org.http4k.core.Method
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.with
@@ -39,7 +40,7 @@ private fun HttpHandler.getEmbeddings(
   request: OpenAiEmbeddingsRequest
 ): Result<OpenAiEmbeddingsResponse, PurpleError.EmbedDocumentError> =
   resultFrom {
-    this(Request(GET, "/v1/embeddings").with(openAiRequestBodyLens of request))
+    this(Request(Method.POST, "/v1/embeddings").with(openAiRequestBodyLens of request))
   }
     .mapFailure { e -> PurpleError.EmbedDocumentError("${e::class.simpleName}: ${e.message}") }
     .flatMap { response ->
