@@ -50,7 +50,7 @@ class DocumentMetadataReceiverTest {
       fetchDocument, embedDocument, storeDocument
     )
 
-    documentMetadataHandler(metadata).shouldBeFailure(FetchDocumentError("error-message"))
+    documentMetadataHandler(metadata) shouldBeFailure FetchDocumentError("error-message")
   }
 
   @Test
@@ -62,7 +62,7 @@ class DocumentMetadataReceiverTest {
       fetchDocument, embedDocument, storeDocument
     )
 
-    documentMetadataHandler(metadata).shouldBeFailure(EmbedDocumentError("error-message"))
+    documentMetadataHandler(metadata) shouldBeFailure EmbedDocumentError("error-message")
   }
 
   @Test
@@ -74,7 +74,7 @@ class DocumentMetadataReceiverTest {
       fetchDocument, embedDocument, storeDocument
     )
 
-    documentMetadataHandler(metadata).shouldBeFailure(StoreDocumentError("error-message"))
+    documentMetadataHandler(metadata) shouldBeFailure StoreDocumentError("error-message")
   }
 
   @Test
@@ -86,12 +86,12 @@ class DocumentMetadataReceiverTest {
       fetchDocument, embedDocument, storeDocument
     )
 
-    documentMetadataHandler(metadata).shouldBeFailure(UnexpectedError("IllegalStateException: error-message"))
+    documentMetadataHandler(metadata) shouldBeFailure UnexpectedError("IllegalStateException: error-message")
   }
 }
 
 
-internal fun document(): Document = Fabrikate().random()
+private fun document(): Document = Fabrikate().random()
 
-internal fun embeddedDocument(): EmbeddedDocument =
+private fun embeddedDocument(): EmbeddedDocument =
   Fabrikate().random()

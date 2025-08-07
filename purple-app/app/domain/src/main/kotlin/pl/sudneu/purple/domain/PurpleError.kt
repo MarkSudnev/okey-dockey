@@ -5,6 +5,7 @@ sealed interface PurpleError {
 
   data class FetchDocumentError(override val message: String) : PurpleError
   data class EmbedDocumentError(override val message: String) : PurpleError
+  data class EmbedDocumentQueryError(override val message: String) : PurpleError
   data class RetrieveDocumentsError(override val message: String) : PurpleError
   data class StoreDocumentError(override val message: String) : PurpleError
   data class SearchDocumentError(override val message: String) : PurpleError

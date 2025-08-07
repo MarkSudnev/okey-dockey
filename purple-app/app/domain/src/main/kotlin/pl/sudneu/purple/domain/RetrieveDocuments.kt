@@ -1,11 +1,11 @@
 package pl.sudneu.purple.domain
 
 import dev.forkhandles.result4k.Result
+import pl.sudneu.purple.domain.PurpleError.RetrieveDocumentsError
 
-typealias Embedding = List<Double>
 
 fun interface RetrieveDocuments {
-  operator fun invoke(embedding: Embedding): Result<List<String>, PurpleError.RetrieveDocumentsError>
+  operator fun invoke(query: EmbeddedQuery, resultsCount: Int): Result<List<Document>, RetrieveDocumentsError>
 
   companion object
 }
