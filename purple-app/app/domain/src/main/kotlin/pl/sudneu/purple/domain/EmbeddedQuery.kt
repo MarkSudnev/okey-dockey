@@ -1,3 +1,5 @@
 package pl.sudneu.purple.domain
 
-data class EmbeddedQuery(val embedding: List<Double>)
+import pl.sudneu.purple.shared.PositiveInteger
+
+data class EmbeddedQuery(val embedding: List<Double>, val resultsCount: PositiveInteger)

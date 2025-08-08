@@ -20,7 +20,7 @@ class SearchDocumentsRouteShould {
 
   @Test
   fun `return documents contents when they were found`() {
-    val searchDocuments = SearchDocuments { _, _ ->
+    val searchDocuments = SearchDocuments {
       listOf(
         Document("In diam sem aenean senectus."),
         Document("Convallis convallis curae habitasse."),
@@ -36,9 +36,7 @@ class SearchDocumentsRouteShould {
 
   @Test
   fun `return empty list when nothing is found`() {
-    val searchDocuments = SearchDocuments { _, _ ->
-      emptyList<Document>().asSuccess()
-    }
+    val searchDocuments = SearchDocuments { emptyList<Document>().asSuccess() }
     val client = SearchDocumentsRoute(searchDocuments)
     with(client(Request(GET, "/api/v1/documents?q=lorem&n=3"))) {
       this shouldHaveStatus OK
@@ -48,9 +46,7 @@ class SearchDocumentsRouteShould {
 
   @Test
   fun `return bad request when query is missed`() {
-    val searchDocuments = SearchDocuments { _, _ ->
-      emptyList<Document>().asSuccess()
-    }
+    val searchDocuments = SearchDocuments { emptyList<Document>().asSuccess() }
     val client = ServerFilters
       .CatchLensFailure
       .then(SearchDocumentsRoute(searchDocuments))
@@ -58,8 +54,17 @@ class SearchDocumentsRouteShould {
   }
 
   @Test
+  fun `return bad request when results number is negative`() {
+    val searchDocuments = SearchDocuments { emptyList<Document>().asSuccess() }
+    val client = ServerFilters
+      .CatchLensFailure
+      .then(SearchDocumentsRoute(searchDocuments))
+    client(Request(GET, "/api/v1/documents?q=Lorem%20Ipsum&n=-3")) shouldHaveStatus BAD_REQUEST
+  }
+
+  @Test
   fun `return internal server error when search documents is failed`() {
-    val searchDocuments = SearchDocuments { _, _ ->
+    val searchDocuments = SearchDocuments {
       PurpleError.SearchDocumentError("some-error").asFailure()
     }
     val client = ServerFilters
@@ -70,9 +75,7 @@ class SearchDocumentsRouteShould {
 
   @Test
   fun `return internal server error when unexpected error is happened`() {
-    val searchDocuments = SearchDocuments { _, _ ->
-      error("unexpected-error")
-    }
+    val searchDocuments = SearchDocuments { error("unexpected-error") }
     val client = ServerFilters
       .CatchLensFailure
       .then(SearchDocumentsRoute(searchDocuments))

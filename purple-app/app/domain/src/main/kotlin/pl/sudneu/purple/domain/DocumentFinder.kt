@@ -6,9 +6,9 @@ fun DocumentFinder(
   embedDocumentQuery: EmbedDocumentQuery,
   retrieveDocuments: RetrieveDocuments
 ): SearchDocuments =
-  SearchDocuments { query, resultsCount ->
+  SearchDocuments { query->
     handleException {
       embedDocumentQuery(query)
-        .flatMap { embedding -> retrieveDocuments(embedding, resultsCount) }
+        .flatMap { embedding -> retrieveDocuments(embedding) }
     }
   }

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test
 import pl.sudneu.purple.domain.PurpleError.EmbedDocumentQueryError
 import pl.sudneu.purple.domain.PurpleError.RetrieveDocumentsError
 import pl.sudneu.purple.domain.PurpleError.UnexpectedError
+import pl.sudneu.purple.shared.toPositiveInteger
 
 class DocumentFinderShould {
 
@@ -21,17 +22,20 @@ class DocumentFinderShould {
 
   @BeforeEach
   fun setup() {
-    every { embedDocumentQuery(any()) } returns EmbeddedQuery(emptyList()).asSuccess()
-    every { retrieveDocuments(any(), any()) } returns listOf(document()).asSuccess()
+    every { embedDocumentQuery(any()) } returns EmbeddedQuery(
+      emptyList(),
+      3.toPositiveInteger()
+    ).asSuccess()
+    every { retrieveDocuments(any()) } returns listOf(document()).asSuccess()
   }
 
   @Test
   fun `call collaborators`() {
     val searchDocuments = DocumentFinder(embedDocumentQuery, retrieveDocuments)
 
-    searchDocuments(DocumentQuery("Hello"), 3).shouldBeSuccess()
+    searchDocuments(DocumentQuery("Hello", 3)).shouldBeSuccess()
     verify { embedDocumentQuery(any()) }
-    verify { retrieveDocuments(any(), any()) }
+    verify { retrieveDocuments(any()) }
 
   }
 
@@ -42,18 +46,18 @@ class DocumentFinderShould {
     }
     val searchDocuments = DocumentFinder(embedDocumentQuery, retrieveDocuments)
 
-    searchDocuments(DocumentQuery("Hello"), 3) shouldBeFailure
+    searchDocuments(DocumentQuery("Hello", 3)) shouldBeFailure
       EmbedDocumentQueryError("some-error")
   }
 
   @Test
   fun `return failure when retrieve documents is failed`() {
-    val retrieveDocuments = RetrieveDocuments { _, _ ->
+    val retrieveDocuments = RetrieveDocuments {
       RetrieveDocumentsError("some-error").asFailure()
     }
     val searchDocuments = DocumentFinder(embedDocumentQuery, retrieveDocuments)
 
-    searchDocuments(DocumentQuery("Hello"), 3) shouldBeFailure
+    searchDocuments(DocumentQuery("Hello", 3)) shouldBeFailure
       RetrieveDocumentsError("some-error")
   }
 
@@ -63,7 +67,7 @@ class DocumentFinderShould {
 
     val searchDocuments = DocumentFinder(embedDocumentQuery, retrieveDocuments)
 
-    searchDocuments(DocumentQuery("Hello"), 3) shouldBeFailure
+    searchDocuments(DocumentQuery("Hello", 3)) shouldBeFailure
       UnexpectedError("IllegalStateException: error-message")
   }
 }

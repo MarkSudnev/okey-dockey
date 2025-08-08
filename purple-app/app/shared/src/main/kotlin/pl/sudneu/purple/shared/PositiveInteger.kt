@@ -6,3 +6,5 @@ data class PositiveInteger(val value: Int) {
   }
 }
 
+fun Int.toPositiveInteger(): PositiveInteger =
+  PositiveInteger(this)

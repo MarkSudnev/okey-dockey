@@ -17,20 +17,26 @@ import org.http4k.routing.bind
 import pl.sudneu.purple.domain.DocumentQuery
 import pl.sudneu.purple.domain.SearchDocuments
 import pl.sudneu.purple.domain.handleException
+import pl.sudneu.purple.shared.NonBlankString
+import pl.sudneu.purple.shared.PositiveInteger
+import pl.sudneu.purple.shared.toPositiveInteger
 
 val documentsResponseBodyLens = Body.auto<List<String>>().toLens()
 val documentQueryRequestLens = Query
   .nonBlankString()
-  .map(::DocumentQuery, DocumentQuery::toString)
+  .map(::NonBlankString, NonBlankString::toString)
   .required("q")
-val documentCountRequestLens = Query.int().defaulted("n", 3)
+val documentCountRequestLens = Query.int()
+  .map(::PositiveInteger, PositiveInteger::value)
+  .defaulted("n", 3.toPositiveInteger())
 
 fun SearchDocumentsRoute(searchDocuments: SearchDocuments): RoutingHttpHandler =
   "/api/v1/documents" bind GET to { request ->
     val query = documentQueryRequestLens(request)
     val count = documentCountRequestLens(request)
+    val documentQuery = DocumentQuery(query, count)
     handleException {
-      searchDocuments(query, count)
+      searchDocuments(documentQuery)
         .map { documents -> documents.map { doc -> doc.content.value } }
         .map { results -> Response(OK).with(documentsResponseBodyLens of results) }
     }
