@@ -1,4 +1,4 @@
-package pl.sudneu.purple.domain
+package pl.sudneu.purple.shared
 
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.assertions.throwables.shouldThrow

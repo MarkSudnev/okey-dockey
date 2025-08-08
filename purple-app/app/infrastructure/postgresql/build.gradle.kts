@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+  implementation(project(":app:shared"))
   implementation(project(":app:domain"))
   implementation(libs.bundles.postgresql)
   testImplementation(libs.hikari)

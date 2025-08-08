@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+  implementation(project(":app:shared"))
   implementation(project(":app:domain"))
   implementation(project(":app:infrastructure:aws"))
   implementation(project(":app:infrastructure:openai"))

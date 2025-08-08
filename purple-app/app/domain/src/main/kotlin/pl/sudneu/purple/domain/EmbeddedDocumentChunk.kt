@@ -1,5 +1,7 @@
 package pl.sudneu.purple.domain
 
+import pl.sudneu.purple.shared.NonBlankString
+
 data class EmbeddedDocument(val chunks: List<EmbeddedDocumentChunk>)
 
 data class EmbeddedDocumentChunk(val content: NonBlankString, val embeddings: List<Double>) {

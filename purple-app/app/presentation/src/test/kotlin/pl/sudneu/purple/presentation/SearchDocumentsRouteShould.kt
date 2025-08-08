@@ -78,7 +78,4 @@ class SearchDocumentsRouteShould {
       .then(SearchDocumentsRoute(searchDocuments))
     client(Request(GET, "/api/v1/documents?q=lorem&n=3")) shouldHaveStatus INTERNAL_SERVER_ERROR
   }
-
-
 }
-

@@ -1,4 +1,4 @@
-package pl.sudneu.purple.domain
+package pl.sudneu.purple.shared
 
 data class NonBlankString(val value: String) {
   init {

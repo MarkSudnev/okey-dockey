@@ -3,5 +3,6 @@ plugins {
 }
 
 dependencies {
+  implementation(project(":app:shared"))
   testImplementation(libs.mockk)
 }

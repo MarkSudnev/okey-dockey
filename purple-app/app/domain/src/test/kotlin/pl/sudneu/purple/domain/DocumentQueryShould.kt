@@ -2,6 +2,7 @@ package pl.sudneu.purple.domain
 
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
+import pl.sudneu.purple.shared.NonBlankString
 
 class DocumentQueryShould {
 
