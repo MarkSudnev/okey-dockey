@@ -1,17 +1,11 @@
 package pl.sudneu.purple.infrastructure.openai
 
 import dev.forkhandles.result4k.Result
-import dev.forkhandles.result4k.asFailure
-import dev.forkhandles.result4k.asSuccess
 import dev.forkhandles.result4k.flatMap
 import dev.forkhandles.result4k.map
 import dev.forkhandles.result4k.mapFailure
-import dev.forkhandles.result4k.resultFrom
 import dev.forkhandles.result4k.zip
 import org.http4k.core.HttpHandler
-import org.http4k.core.Method
-import org.http4k.core.Request
-import org.http4k.core.with
 import pl.sudneu.purple.domain.Document
 import pl.sudneu.purple.domain.store.EmbedDocument
 import pl.sudneu.purple.domain.store.EmbeddedDocument
@@ -25,26 +19,24 @@ fun OpenAiEmbedDocument(client: HttpHandler, splitDocument: SplitDocument): Embe
     val documentChunks = handleException { splitDocument(document) }
     val embeddings = documentChunks
       .map { texts -> OpenAiEmbeddingsRequest(texts) }
-      .flatMap { request -> client.getEmbeddings(request) }
+      .flatMap { request -> client.fetchDocumentEmbeddings(request) }
       .map { embeddingsResponse -> embeddingsResponse.data.map { it.embedding } }
 
     zip(documentChunks, embeddings) { chunks, embs ->
       chunks.mapIndexed { index, chunk -> EmbeddedDocumentChunk(chunk, embs[index]) }
     }
       .map { chunks -> EmbeddedDocument(chunks) }
-      .mapFailure { fail -> PurpleError.EmbedDocumentError(fail.message) }
+      .mapFailure { error -> PurpleError.EmbedDocumentError(error.message) }
   }
 
-private fun HttpHandler.getEmbeddings(
+private fun HttpHandler.fetchDocumentEmbeddings(
   request: OpenAiEmbeddingsRequest
 ): Result<OpenAiEmbeddingsResponse, PurpleError.EmbedDocumentError> =
-  resultFrom {
-    this(Request(Method.POST, "/v1/embeddings").with(openAiRequestBodyLens of request))
+  fetchEmbeddings(request).mapFailure { error ->
+    PurpleError.EmbedDocumentError(error.message)
   }
-    .mapFailure { e -> PurpleError.EmbedDocumentError("${e::class.simpleName}: ${e.message}") }
-    .flatMap { response ->
-      if (response.status.successful) openAiResponseBodyLens(response).asSuccess()
-      else PurpleError.EmbedDocumentError(response.bodyString()).asFailure()
-    }
 
-fun EmbedDocument.Companion.withOpenAi(client: HttpHandler, splitDocument: SplitDocument) = OpenAiEmbedDocument(client, splitDocument)
+fun EmbedDocument.Companion.withOpenAi(
+  client: HttpHandler,
+  splitDocument: SplitDocument
+) = OpenAiEmbedDocument(client, splitDocument)

@@ -25,8 +25,7 @@ class PurpleMessageHandler(
   fun listen(topicName: String) {
     consumer.subscribe(setOf(topicName))
     Runtime.getRuntime().addShutdownHook(Thread {
-      stop()
-      events(ApplicationStopped)
+      stop().also { events(ApplicationStopped) }
     })
     events(MessageHandlerStarted)
     try {
