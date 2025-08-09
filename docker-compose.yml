@@ -101,6 +101,8 @@ services:
         condition: service_started
       vector-storage:
         condition: service_healthy
+    ports:
+      - "8095:8095"
     environment:
       VEC_DATABASE_USERNAME: ${VEC_DATABASE_USERNAME}
       VEC_DATABASE_PASSWORD: ${VEC_DATABASE_PASSWORD}
@@ -113,3 +115,4 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       OPEN_AI_URL_ENDPOINT: http://llama-cpp:8090
+      API_PORT: 8095
