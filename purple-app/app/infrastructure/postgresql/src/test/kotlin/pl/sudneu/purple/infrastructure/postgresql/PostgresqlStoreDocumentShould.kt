@@ -14,8 +14,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.testcontainers.containers.PostgreSQLContainer
-import pl.sudneu.purple.domain.EmbeddedDocument
-import pl.sudneu.purple.domain.EmbeddedDocumentChunk
+import pl.sudneu.purple.domain.store.EmbeddedDocument
+import pl.sudneu.purple.domain.store.EmbeddedDocumentChunk
 import pl.sudneu.purple.domain.PurpleError.StoreDocumentError
 import javax.sql.DataSource
 import kotlin.random.Random

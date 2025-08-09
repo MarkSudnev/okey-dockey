@@ -9,9 +9,7 @@ import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.maps.shouldHaveKey
 import io.kotest.matchers.maps.shouldHaveSize
-import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.types.beInstanceOf
 import io.mockk.every
 import io.mockk.mockk
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -23,12 +21,12 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import pl.sudneu.purple.domain.Document
 import pl.sudneu.purple.domain.DocumentMetadataReceiver
-import pl.sudneu.purple.domain.EmbedDocument
-import pl.sudneu.purple.domain.EmbeddedDocument
+import pl.sudneu.purple.domain.store.EmbedDocument
+import pl.sudneu.purple.domain.store.EmbeddedDocument
 import pl.sudneu.purple.domain.FetchDocument
 import pl.sudneu.purple.domain.PurpleError
-import pl.sudneu.purple.domain.ReceiveDocumentMetadata
-import pl.sudneu.purple.domain.StoreDocument
+import pl.sudneu.purple.domain.store.ReceiveDocumentMetadata
+import pl.sudneu.purple.domain.store.StoreDocument
 import pl.sudneu.purple.logging.ErrorHappened
 import pl.sudneu.purple.logging.FailureHappened
 import pl.sudneu.purple.logging.TestApplicationEvents

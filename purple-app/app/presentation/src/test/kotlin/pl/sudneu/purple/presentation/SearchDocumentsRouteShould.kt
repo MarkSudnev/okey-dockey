@@ -14,7 +14,7 @@ import org.http4k.kotest.shouldHaveStatus
 import org.junit.jupiter.api.Test
 import pl.sudneu.purple.domain.Document
 import pl.sudneu.purple.domain.PurpleError
-import pl.sudneu.purple.domain.SearchDocuments
+import pl.sudneu.purple.domain.retrieve.SearchDocuments
 
 class SearchDocumentsRouteShould {
 

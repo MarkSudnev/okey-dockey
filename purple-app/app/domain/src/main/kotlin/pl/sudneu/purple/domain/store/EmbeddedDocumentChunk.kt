@@ -1,4 +1,4 @@
-package pl.sudneu.purple.domain
+package pl.sudneu.purple.domain.store
 
 import pl.sudneu.purple.shared.NonBlankString
 

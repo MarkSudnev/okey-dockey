@@ -14,6 +14,10 @@ import pl.sudneu.purple.domain.PurpleError.EmbedDocumentError
 import pl.sudneu.purple.domain.PurpleError.FetchDocumentError
 import pl.sudneu.purple.domain.PurpleError.StoreDocumentError
 import pl.sudneu.purple.domain.PurpleError.UnexpectedError
+import pl.sudneu.purple.domain.store.DocumentMetadata
+import pl.sudneu.purple.domain.store.EmbedDocument
+import pl.sudneu.purple.domain.store.EmbeddedDocument
+import pl.sudneu.purple.domain.store.StoreDocument
 
 class DocumentMetadataReceiverTest {
 
@@ -43,7 +47,9 @@ class DocumentMetadataReceiverTest {
 
   @Test
   fun `return failure when fetch document is failed`() {
-    every { fetchDocument.invoke(any()) } returns FetchDocumentError("error-message").asFailure()
+    every {
+      fetchDocument.invoke(any())
+    } returns FetchDocumentError("error-message").asFailure()
 
     val metadata: DocumentMetadata = Fabrikate().random()
     val documentMetadataHandler = DocumentMetadataReceiver(
@@ -55,7 +61,9 @@ class DocumentMetadataReceiverTest {
 
   @Test
   fun `return failure when embed document is failed`() {
-    every { embedDocument.invoke(any()) } returns EmbedDocumentError("error-message").asFailure()
+    every {
+      embedDocument.invoke(any())
+    } returns EmbedDocumentError("error-message").asFailure()
 
     val metadata: DocumentMetadata = Fabrikate().random()
     val documentMetadataHandler = DocumentMetadataReceiver(
@@ -67,7 +75,9 @@ class DocumentMetadataReceiverTest {
 
   @Test
   fun `return failure when store document is failed`() {
-    every { storeDocument.invoke(any()) } returns StoreDocumentError("error-message").asFailure()
+    every {
+      storeDocument.invoke(any())
+    } returns StoreDocumentError("error-message").asFailure()
 
     val metadata: DocumentMetadata = Fabrikate().random()
     val documentMetadataHandler = DocumentMetadataReceiver(
@@ -86,7 +96,8 @@ class DocumentMetadataReceiverTest {
       fetchDocument, embedDocument, storeDocument
     )
 
-    documentMetadataHandler(metadata) shouldBeFailure UnexpectedError("IllegalStateException: error-message")
+    documentMetadataHandler(metadata) shouldBeFailure
+      UnexpectedError("IllegalStateException: error-message")
   }
 }
 

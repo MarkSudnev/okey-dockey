@@ -17,7 +17,7 @@ import org.http4k.core.Uri
 import pl.sudneu.purple.domain.Document
 import pl.sudneu.purple.domain.FetchDocument
 import pl.sudneu.purple.domain.PurpleError.FetchDocumentError
-import pl.sudneu.purple.domain.RemoteFileLocation
+import pl.sudneu.purple.domain.store.RemoteFileLocation
 import pl.sudneu.purple.domain.handleException
 
 

@@ -13,6 +13,11 @@ import org.junit.jupiter.api.Test
 import pl.sudneu.purple.domain.PurpleError.EmbedDocumentQueryError
 import pl.sudneu.purple.domain.PurpleError.RetrieveDocumentsError
 import pl.sudneu.purple.domain.PurpleError.UnexpectedError
+import pl.sudneu.purple.domain.retrieve.DocumentFinder
+import pl.sudneu.purple.domain.retrieve.DocumentQuery
+import pl.sudneu.purple.domain.retrieve.EmbedDocumentQuery
+import pl.sudneu.purple.domain.retrieve.EmbeddedQuery
+import pl.sudneu.purple.domain.retrieve.RetrieveDocuments
 import pl.sudneu.purple.shared.toPositiveInteger
 
 class DocumentFinderShould {

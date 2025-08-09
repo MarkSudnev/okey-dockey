@@ -10,13 +10,12 @@ import dev.forkhandles.result4k.resultFrom
 import dev.forkhandles.result4k.zip
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method
-import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.with
 import pl.sudneu.purple.domain.Document
-import pl.sudneu.purple.domain.EmbedDocument
-import pl.sudneu.purple.domain.EmbeddedDocument
-import pl.sudneu.purple.domain.EmbeddedDocumentChunk
+import pl.sudneu.purple.domain.store.EmbedDocument
+import pl.sudneu.purple.domain.store.EmbeddedDocument
+import pl.sudneu.purple.domain.store.EmbeddedDocumentChunk
 import pl.sudneu.purple.domain.PurpleError
 import pl.sudneu.purple.domain.handleException
 

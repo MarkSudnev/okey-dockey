@@ -5,7 +5,7 @@ import dev.forkhandles.result4k.recover
 import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.ConsumerRecords
 import org.apache.kafka.common.errors.WakeupException
-import pl.sudneu.purple.domain.ReceiveDocumentMetadata
+import pl.sudneu.purple.domain.store.ReceiveDocumentMetadata
 import pl.sudneu.purple.logging.ApplicationEvent
 import pl.sudneu.purple.logging.ApplicationEventHappened
 import pl.sudneu.purple.logging.ApplicationEvents

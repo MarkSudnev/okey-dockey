@@ -18,7 +18,7 @@ import org.http4k.core.Status.Companion.SERVICE_UNAVAILABLE
 import org.junit.jupiter.api.Test
 import pl.sudneu.purple.domain.Document
 import pl.sudneu.purple.domain.PurpleError.FetchDocumentError
-import pl.sudneu.purple.domain.RemoteFileLocation
+import pl.sudneu.purple.domain.store.RemoteFileLocation
 import java.net.URI
 
 class AwsFetchDocumentShould {

@@ -2,6 +2,7 @@ package pl.sudneu.purple.domain
 
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
+import pl.sudneu.purple.domain.retrieve.DocumentQuery
 import pl.sudneu.purple.shared.NonBlankString
 import pl.sudneu.purple.shared.PositiveInteger
 

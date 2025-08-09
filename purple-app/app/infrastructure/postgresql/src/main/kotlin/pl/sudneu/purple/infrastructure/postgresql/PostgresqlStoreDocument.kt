@@ -2,9 +2,9 @@ package pl.sudneu.purple.infrastructure.postgresql
 
 import dev.forkhandles.result4k.mapFailure
 import dev.forkhandles.result4k.resultFrom
-import pl.sudneu.purple.domain.EmbeddedDocumentChunk
+import pl.sudneu.purple.domain.store.EmbeddedDocumentChunk
 import pl.sudneu.purple.domain.PurpleError.StoreDocumentError
-import pl.sudneu.purple.domain.StoreDocument
+import pl.sudneu.purple.domain.store.StoreDocument
 import java.sql.Connection
 import java.sql.Types.ARRAY
 import javax.sql.DataSource

@@ -1,6 +1,7 @@
-package pl.sudneu.purple.domain
+package pl.sudneu.purple.domain.retrieve
 
 import dev.forkhandles.result4k.flatMap
+import pl.sudneu.purple.domain.handleException
 
 fun DocumentFinder(
   embedDocumentQuery: EmbedDocumentQuery,

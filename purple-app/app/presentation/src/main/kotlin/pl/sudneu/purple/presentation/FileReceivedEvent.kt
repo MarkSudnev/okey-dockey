@@ -1,8 +1,8 @@
 package pl.sudneu.purple.presentation
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import pl.sudneu.purple.domain.DocumentMetadata
-import pl.sudneu.purple.domain.RemoteFileLocation
+import pl.sudneu.purple.domain.store.DocumentMetadata
+import pl.sudneu.purple.domain.store.RemoteFileLocation
 import java.net.URI
 
 @JsonIgnoreProperties(ignoreUnknown = true)
