@@ -20,22 +20,10 @@ import pl.sudneu.purple.domain.PurpleError.StoreDocumentError
 import javax.sql.DataSource
 import kotlin.random.Random
 
-const val vectorSize = 1152
+private const val vectorSize = 1152
 
 @DisabledIfEnvironmentVariable(named = "SKIP_TEST_CONTAINERS", matches = "true")
-class PostgresqlStoreDocumentShould {
-
-
-  private val datasource: DataSource by lazy {
-    HikariConfig().also { config ->
-      config.driverClassName = "org.postgresql.Driver"
-      config.jdbcUrl = pgVectorContainer.jdbcUrl
-      config.username = pgVectorContainer.username
-      config.password = pgVectorContainer.password
-      config.maximumPoolSize = 6
-      config.isReadOnly = false
-    }.let { HikariDataSource(it) }
-  }
+class PostgresqlStoreDocumentShould : PostgresqlRunner() {
 
   @BeforeEach
   fun setup() {
@@ -88,26 +76,6 @@ class PostgresqlStoreDocumentShould {
     storeDocument(embeddedDocument) shouldBeFailure StoreDocumentError(
       "PSQLException: ERROR: expected $vectorSize dimensions, not 2"
     )
-  }
-
-  companion object {
-
-    val pgVectorContainer = PostgreSQLContainer("pgvector/pgvector:pg16")
-      .withDatabaseName("dockey")
-      .withUsername("root")
-      .withPassword("root")
-
-    @BeforeAll
-    @JvmStatic
-    fun runInfrastructure() {
-      pgVectorContainer.start()
-    }
-
-    @AfterAll
-    @JvmStatic
-    fun stopInfrastructure() {
-      pgVectorContainer.stop()
-    }
   }
 }
 
