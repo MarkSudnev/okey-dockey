@@ -8,6 +8,8 @@ fun <T> handleException(block: (Unit) -> Result<T, PurpleError>): Result<T, Purp
   return try {
     block(Unit)
   } catch (e: Throwable) {
-    Failure(UnexpectedError("${e::class.simpleName}: ${e.message}"))
+    Failure(UnexpectedError(e.toPurpleMessage()))
   }
 }
+
+fun Throwable.toPurpleMessage(): String = "${this::class.simpleName}: ${this.message}"

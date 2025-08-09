@@ -5,6 +5,7 @@ import dev.forkhandles.result4k.recover
 import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.ConsumerRecords
 import org.apache.kafka.common.errors.WakeupException
+import pl.sudneu.purple.domain.toPurpleMessage
 import pl.sudneu.purple.domain.store.ReceiveDocumentMetadata
 import pl.sudneu.purple.logging.ApplicationEvent
 import pl.sudneu.purple.logging.ApplicationEventHappened
@@ -34,7 +35,7 @@ class PurpleMessageHandler(
     } catch (exception: Exception) {
       events(ErrorHappened(
         exception::class.java,
-        "${exception::class.simpleName}: ${exception.message}"
+        exception.toPurpleMessage()
       ))
     } finally {
       consumer.close()

@@ -22,10 +22,12 @@ import pl.sudneu.purple.shared.PositiveInteger
 import pl.sudneu.purple.shared.toPositiveInteger
 
 val documentsResponseBodyLens = Body.auto<List<String>>().toLens()
+
 val documentQueryRequestLens = Query
   .nonBlankString()
   .map(::NonBlankString, NonBlankString::toString)
   .required("q")
+
 val documentCountRequestLens = Query.int()
   .map(::PositiveInteger, PositiveInteger::value)
   .defaulted("n", 3.toPositiveInteger())
@@ -35,6 +37,7 @@ fun SearchDocumentsRoute(searchDocuments: SearchDocuments): RoutingHttpHandler =
     val query = documentQueryRequestLens(request)
     val count = documentCountRequestLens(request)
     val documentQuery = DocumentQuery(query, count)
+
     handleException {
       searchDocuments(documentQuery)
         .map { documents -> documents.map { doc -> doc.content.value } }

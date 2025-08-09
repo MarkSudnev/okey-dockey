@@ -8,8 +8,5 @@ fun DocumentFinder(
   retrieveDocuments: RetrieveDocuments
 ): SearchDocuments =
   SearchDocuments { query->
-    handleException {
-      embedDocumentQuery(query)
-        .flatMap { embedding -> retrieveDocuments(embedding) }
-    }
+    handleException { embedDocumentQuery(query).flatMap(retrieveDocuments::invoke) }
   }
