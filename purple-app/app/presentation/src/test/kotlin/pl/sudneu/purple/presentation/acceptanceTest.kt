@@ -3,8 +3,6 @@ package pl.sudneu.purple.presentation
 import com.zaxxer.hikari.HikariDataSource
 import dev.forkhandles.fabrikate.Fabrikate
 import io.kotest.matchers.collections.shouldContain
-import io.kotest.matchers.string.shouldContain
-import io.kotest.matchers.string.shouldStartWith
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.consumer.MockConsumer
 import org.apache.kafka.clients.consumer.OffsetResetStrategy.EARLIEST
@@ -34,7 +32,6 @@ import org.http4k.core.Status.Companion.OK
 import org.http4k.core.Uri
 import org.http4k.core.then
 import org.http4k.filter.ClientFilters
-import org.http4k.kotest.shouldHaveBody
 import org.http4k.kotest.shouldHaveStatus
 import org.http4k.server.SunHttp
 import org.http4k.server.asServer
@@ -46,8 +43,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.testcontainers.containers.PostgreSQLContainer
 import pl.sudneu.purple.domain.DocumentMetadataReceiver
-import pl.sudneu.purple.domain.store.EmbedDocument
 import pl.sudneu.purple.domain.FetchDocument
+import pl.sudneu.purple.domain.store.EmbedDocument
 import pl.sudneu.purple.domain.store.StoreDocument
 import pl.sudneu.purple.infrastructure.aws.withAws
 import pl.sudneu.purple.infrastructure.openai.SplitDocument

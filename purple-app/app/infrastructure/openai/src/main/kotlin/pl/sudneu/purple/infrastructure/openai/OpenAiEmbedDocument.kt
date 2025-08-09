@@ -7,11 +7,11 @@ import dev.forkhandles.result4k.mapFailure
 import dev.forkhandles.result4k.zip
 import org.http4k.core.HttpHandler
 import pl.sudneu.purple.domain.Document
+import pl.sudneu.purple.domain.PurpleError
+import pl.sudneu.purple.domain.handleException
 import pl.sudneu.purple.domain.store.EmbedDocument
 import pl.sudneu.purple.domain.store.EmbeddedDocument
 import pl.sudneu.purple.domain.store.EmbeddedDocumentChunk
-import pl.sudneu.purple.domain.PurpleError
-import pl.sudneu.purple.domain.handleException
 
 fun OpenAiEmbedDocument(client: HttpHandler, splitDocument: SplitDocument): EmbedDocument =
 

@@ -1,7 +1,6 @@
 package pl.sudneu.purple.infrastructure.postgresql
 
 import com.pgvector.PGvector
-import dev.forkhandles.result4k.asSuccess
 import dev.forkhandles.result4k.mapFailure
 import dev.forkhandles.result4k.resultFrom
 import pl.sudneu.purple.domain.Document

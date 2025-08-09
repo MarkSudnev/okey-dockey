@@ -14,9 +14,9 @@ import org.http4k.lens.int
 import org.http4k.lens.nonBlankString
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
+import pl.sudneu.purple.domain.handleException
 import pl.sudneu.purple.domain.retrieve.DocumentQuery
 import pl.sudneu.purple.domain.retrieve.SearchDocuments
-import pl.sudneu.purple.domain.handleException
 import pl.sudneu.purple.shared.NonBlankString
 import pl.sudneu.purple.shared.PositiveInteger
 import pl.sudneu.purple.shared.toPositiveInteger

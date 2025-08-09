@@ -1,23 +1,17 @@
 package pl.sudneu.purple.infrastructure.postgresql
 
 import com.pgvector.PGvector
-import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
 import dev.forkhandles.result4k.kotest.shouldBeFailure
 import dev.forkhandles.result4k.kotest.shouldBeSuccess
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
-import org.testcontainers.containers.PostgreSQLContainer
+import pl.sudneu.purple.domain.PurpleError.StoreDocumentError
 import pl.sudneu.purple.domain.store.EmbeddedDocument
 import pl.sudneu.purple.domain.store.EmbeddedDocumentChunk
-import pl.sudneu.purple.domain.PurpleError.StoreDocumentError
-import javax.sql.DataSource
 import kotlin.random.Random
 
 private const val vectorSize = 1152

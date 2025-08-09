@@ -17,7 +17,7 @@ import pl.sudneu.purple.presentation.PurpleEnvironment.VEC_DATABASE_DRIVER
 import pl.sudneu.purple.presentation.PurpleEnvironment.VEC_DATABASE_PASSWORD
 import pl.sudneu.purple.presentation.PurpleEnvironment.VEC_DATABASE_URL
 import pl.sudneu.purple.presentation.PurpleEnvironment.VEC_DATABASE_USERNAME
-import java.util.Properties
+import java.util.*
 
 class ConfigurationShould {
 

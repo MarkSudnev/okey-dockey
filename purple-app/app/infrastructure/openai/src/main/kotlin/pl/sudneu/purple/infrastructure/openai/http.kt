@@ -9,12 +9,10 @@ import dev.forkhandles.result4k.mapFailure
 import dev.forkhandles.result4k.resultFrom
 import org.http4k.core.Body
 import org.http4k.core.HttpHandler
-import org.http4k.core.Method
 import org.http4k.core.Method.POST
 import org.http4k.core.Request
 import org.http4k.core.with
 import org.http4k.format.Jackson.auto
-import pl.sudneu.purple.domain.PurpleError
 import pl.sudneu.purple.domain.toPurpleMessage
 
 internal val openAiRequestBodyLens = Body.auto<OpenAiEmbeddingsRequest>().toLens()

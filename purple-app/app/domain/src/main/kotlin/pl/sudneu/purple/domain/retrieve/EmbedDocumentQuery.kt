@@ -1,7 +1,6 @@
 package pl.sudneu.purple.domain.retrieve
 
 import dev.forkhandles.result4k.Result
-import pl.sudneu.purple.domain.PurpleError
 import pl.sudneu.purple.domain.PurpleError.EmbedDocumentQueryError
 
 fun interface EmbedDocumentQuery {

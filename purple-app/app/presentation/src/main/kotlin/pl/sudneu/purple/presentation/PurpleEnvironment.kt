@@ -2,7 +2,6 @@ package pl.sudneu.purple.presentation
 
 import com.zaxxer.hikari.HikariConfig
 import org.apache.kafka.clients.consumer.ConsumerConfig
-import org.http4k.client.DualSyncAsyncHttpHandler
 import org.http4k.client.OkHttp
 import org.http4k.config.Environment
 import org.http4k.config.EnvironmentKey
