@@ -30,3 +30,5 @@ fun PostgresqlRetrieveDocuments(datasource: DataSource): RetrieveDocuments {
     }.mapFailure { PurpleError.RetrieveDocumentsError(it.toPurpleMessage()) }
   }
 }
+
+fun RetrieveDocuments.Companion.withPostgresql(datasource: DataSource) = PostgresqlRetrieveDocuments(datasource)

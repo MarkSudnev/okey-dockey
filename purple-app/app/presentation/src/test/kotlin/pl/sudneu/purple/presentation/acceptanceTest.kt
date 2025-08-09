@@ -2,6 +2,9 @@ package pl.sudneu.purple.presentation
 
 import com.zaxxer.hikari.HikariDataSource
 import dev.forkhandles.fabrikate.Fabrikate
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldStartWith
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.consumer.MockConsumer
 import org.apache.kafka.clients.consumer.OffsetResetStrategy.EARLIEST
@@ -21,6 +24,8 @@ import org.http4k.connect.amazon.s3.S3Bucket
 import org.http4k.connect.amazon.s3.createBucket
 import org.http4k.connect.amazon.s3.model.BucketKey
 import org.http4k.connect.amazon.s3.putObject
+import org.http4k.contract.openapi.OpenAPIJackson.auto
+import org.http4k.core.Body
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
@@ -29,7 +34,6 @@ import org.http4k.core.Status.Companion.OK
 import org.http4k.core.Uri
 import org.http4k.core.then
 import org.http4k.filter.ClientFilters
-import org.http4k.filter.debug
 import org.http4k.kotest.shouldHaveBody
 import org.http4k.kotest.shouldHaveStatus
 import org.http4k.server.SunHttp
@@ -88,7 +92,7 @@ class PurpleApplicationTest {
   private val consumer = MockConsumer<String, FileReceivedEvent>(EARLIEST)
   private val handler = PurpleMessageHandler(consumer, metadataReceiver)
 
-  private val service = PurpleApi().asServer(SunHttp(Port.RANDOM.value))
+  private val service = PurpleApi(datasource, openaiClient).asServer(SunHttp(Port.RANDOM.value))
   private val client = ClientFilters
     .SetBaseUriFrom(Uri.of("http://localhost:${service.port()}"))
     .then(OkHttp())
@@ -141,15 +145,7 @@ class PurpleApplicationTest {
     val response = client(Request(GET, "/api/v1/documents?q=people%20suffered%20from%20fire"))
 
     response shouldHaveStatus OK
-    response shouldHaveBody "[$text]"
-
-//    datasource.connection.use { conn ->
-//      val result = conn
-//        .prepareStatement("SELECT * FROM documents")
-//        .executeQuery()
-//      result.next()
-//      result.row shouldBe 1
-//    }
+    searchDocumentsResponseBodyLens(response) shouldContain text
   }
 
   companion object {
@@ -193,7 +189,9 @@ fun randomEvent(key: String): FileReceivedEvent {
   return event
 }
 
-val text = """Fire Department. One concertgoer was pronounced dead at the scene and 27 were
+private val text = """Fire Department. One concertgoer was pronounced dead at the scene and 27 were
   taken to the hospital, of 48 who suffered non-fatal injuries. The street-facing facade and the
   upper roof structure were found on the street after the tornado. Following the collapse,
   the lack of safety protocols despite warning became the subject of multiple lawsuits.""".trimMargin()
+
+private val searchDocumentsResponseBodyLens = Body.auto<List<String>>().toLens()

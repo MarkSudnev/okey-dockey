@@ -12,6 +12,7 @@ import org.http4k.connect.amazon.Environment
 import org.http4k.connect.amazon.s3.model.BucketName
 import org.http4k.core.HttpHandler
 import org.http4k.lens.csv
+import org.http4k.lens.int
 import org.http4k.lens.nonBlankString
 import org.http4k.lens.of
 import org.http4k.lens.secret
@@ -39,6 +40,7 @@ object PurpleEnvironment {
   val AWS_URL_ENDPOINT by EnvironmentKey.uri().of().optional()
   val AWS_BUCKET_NAME by EnvironmentKey.map(BucketName::of, BucketName::value).of().required()
   val OPEN_AI_URL_ENDPOINT by EnvironmentKey.uri().of().required()
+  val API_PORT by EnvironmentKey.int().of().defaulted(8090)
 }
 
 fun Environment.toHikariConfig(): HikariConfig =
