@@ -39,7 +39,6 @@ class PurpleMessageHandlerShould {
   private val topicName = "file-events"
   private val topicPartition = TopicPartition(topicName, 0)
   private val consumer = MockConsumer<String, FileReceivedEvent>(EARLIEST)
-  private val randomEvent: FileReceivedEvent = Fabrikate().random()
   private val randomEmbeddedDocument: EmbeddedDocument = Fabrikate().random()
 
   @BeforeEach
@@ -185,6 +184,22 @@ class PurpleMessageHandlerShould {
     event.reason shouldBe "IllegalStateException: unexpected-exception"
   }
 
+  @Test
+  fun `emit event when unsupported type is received`() {
+    val events = TestApplicationEvents()
+    val handler = PurpleMessageHandler(
+      consumer,
+      documentMetadataReceiver(),
+      events
+    )
+    prepareConsumer()
+    consumer.schedulePollTask { sendMessage(getRandomEvent("filename.pdf")) }
+    stopConsumer()
+    handler.listen(topicPartition.topic())
+
+    events.storage shouldContain UnsupportedFiletype
+  }
+
   private fun documentMetadataReceiver(
     fetchDocument: FetchDocument = mockedFetchDocument,
     embedDocument: EmbedDocument = mockedEmbedDocument,
@@ -193,7 +208,7 @@ class PurpleMessageHandlerShould {
     fetchDocument, embedDocument, storeDocument
   )
 
-  private fun sendMessage(event: FileReceivedEvent = randomEvent) {
+  private fun sendMessage(event: FileReceivedEvent = getRandomEvent()) {
     consumer.addRecord(
       ConsumerRecord(
         topicPartition.topic(),
@@ -205,6 +220,7 @@ class PurpleMessageHandlerShould {
     )
   }
 
+
   private fun prepareConsumer() {
     val offset = 0L
     consumer.updateBeginningOffsets(mapOf(topicPartition to offset))
@@ -214,6 +230,13 @@ class PurpleMessageHandlerShould {
   private fun stopConsumer() {
     consumer.schedulePollTask { consumer.wakeup() }
   }
+}
+
+private fun getRandomEvent(key: String = "filename.txt"): FileReceivedEvent {
+  val metadata: FileMetadata = Fabrikate().random()
+  val record = FileRecord(FileS3(metadata.copy(key = key)))
+  val event = Fabrikate().random<FileReceivedEvent>()
+  return event.copy(Records = listOf(record))
 }
 
 internal fun DummyDocumentStorer(storage: MutableList<EmbeddedDocument>): StoreDocument =

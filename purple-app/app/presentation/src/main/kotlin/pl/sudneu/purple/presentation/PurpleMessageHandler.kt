@@ -50,8 +50,15 @@ class PurpleMessageHandler(
 
   private fun handle(records: ConsumerRecords<String, FileReceivedEvent>) =
     records
-      .map { it.value().toDocumentMetadata() }
-      .forEach { receiveDocumentMetadata(it)
+      .map { record -> record.value().toDocumentMetadata() }
+      .filter { metadata ->
+        val filename = metadata.fileLocation.uri.toString().lowercase()
+        if (!filename.endsWith("txt")) {
+          events(UnsupportedFiletype)
+        }
+        filename.endsWith("txt")
+      }
+      .forEach { metadata -> receiveDocumentMetadata(metadata)
         .peek { consumer.commitSync() }
         .recover { error ->
           events(FailureHappened(error::class.java, error.message))
@@ -65,3 +72,4 @@ class PurpleMessageHandler(
 
 data object MessageHandlerStarted : ApplicationEvent
 data object MessageHandlerStopped : ApplicationEvent
+data object UnsupportedFiletype : ApplicationEvent { val message = "Only .txt filetype is supported"}
