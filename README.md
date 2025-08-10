@@ -39,3 +39,4 @@ Wait for all containers are up and ready.
 
 ## TODO
 - [ ] Use liquibase for migration
+- [ ] Add monitoring
