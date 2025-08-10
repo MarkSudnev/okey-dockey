@@ -42,7 +42,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.testcontainers.containers.PostgreSQLContainer
-import pl.sudneu.purple.domain.DocumentMetadataReceiver
+import pl.sudneu.purple.domain.store.DocumentMetadataReceiver
 import pl.sudneu.purple.domain.FetchDocument
 import pl.sudneu.purple.domain.store.EmbedDocument
 import pl.sudneu.purple.domain.store.StoreDocument
