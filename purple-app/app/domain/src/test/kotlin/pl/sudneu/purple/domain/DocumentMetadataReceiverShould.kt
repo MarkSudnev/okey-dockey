@@ -18,6 +18,7 @@ import pl.sudneu.purple.domain.store.DocumentMetadata
 import pl.sudneu.purple.domain.store.DocumentMetadataReceiver
 import pl.sudneu.purple.domain.store.EmbedDocument
 import pl.sudneu.purple.domain.store.EmbeddedDocument
+import pl.sudneu.purple.domain.store.FetchDocument
 import pl.sudneu.purple.domain.store.StoreDocument
 
 class DocumentMetadataReceiverTest {

@@ -10,7 +10,7 @@ import org.http4k.filter.ClientFilters
 import org.http4k.server.Undertow
 import org.http4k.server.asServer
 import pl.sudneu.purple.domain.store.DocumentMetadataReceiver
-import pl.sudneu.purple.domain.FetchDocument
+import pl.sudneu.purple.domain.store.FetchDocument
 import pl.sudneu.purple.domain.store.EmbedDocument
 import pl.sudneu.purple.domain.store.StoreDocument
 import pl.sudneu.purple.infrastructure.aws.withAws
