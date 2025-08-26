@@ -8,6 +8,12 @@ services:
     volumes:
       - ./models:/root/.cache/llama.cpp/
     command: -hf ggml-org/gemma-3-1b-it-GGUF --embeddings --pooling mean --port 8090 --host 0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090"]
+      interval: 10s
+      timeout: 30s
+      retries: 20
+      start_period: 30s
 
   minio:
     image: minio/minio:RELEASE.2025-04-22T22-12-26Z
@@ -94,6 +100,8 @@ services:
       kafka:
         condition: service_started
       vector-storage:
+        condition: service_healthy
+      llama-cpp:
         condition: service_healthy
     ports:
       - "8095:8095"
