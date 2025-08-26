@@ -61,6 +61,7 @@ but not implemented yet. Simple wrapper called `placeholder` is used so far.
 
 ## TODO:
 
+- [ ] Add filenames to search documents result
 - [ ] Explore Kotlin Exposed ORM for vector type support
 - [ ] Add document splitter
 - [ ] Add more supported documents format
