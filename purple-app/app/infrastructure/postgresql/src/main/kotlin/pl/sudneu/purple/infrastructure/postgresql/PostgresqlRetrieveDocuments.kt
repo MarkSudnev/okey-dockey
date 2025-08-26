@@ -11,7 +11,7 @@ import javax.sql.DataSource
 
 fun PostgresqlRetrieveDocuments(datasource: DataSource): RetrieveDocuments {
   return RetrieveDocuments { query ->
-    val output = mutableListOf<String>()
+    val output = mutableMapOf<String, String>()
     resultFrom {
       datasource.connection.use { conn ->
         PGvector.registerTypes(conn)
@@ -21,11 +21,11 @@ fun PostgresqlRetrieveDocuments(datasource: DataSource): RetrieveDocuments {
             stmt.setInt(2, query.resultsCount.value)
             val result = stmt.executeQuery()
             while (result.next()) {
-              output.add(result.getString(2))
+              output[result.getString(2)] = result.getString(3)
             }
           }
       }
-    output.map { Document(it) }
+    output.map { Document(it.key, it.value) }
     }.mapFailure { PurpleError.RetrieveDocumentsError(it.toPurpleMessage()) }
   }
 }

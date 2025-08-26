@@ -47,7 +47,7 @@ class AwsFetchDocumentShould {
     val fileLocation = RemoteFileLocation(URI.create(documentKey.value))
     val awsFetchDocument = AwsFetchDocument(awsParameters)
 
-    awsFetchDocument(fileLocation) shouldBeSuccess Document(documentContent)
+    awsFetchDocument(fileLocation) shouldBeSuccess Document(documentKey.value, documentContent)
   }
 
   @Test

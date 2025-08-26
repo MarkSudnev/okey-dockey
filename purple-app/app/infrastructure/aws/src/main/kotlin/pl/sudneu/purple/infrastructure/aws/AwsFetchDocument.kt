@@ -6,6 +6,7 @@ import dev.forkhandles.result4k.asSuccess
 import dev.forkhandles.result4k.flatMap
 import dev.forkhandles.result4k.map
 import dev.forkhandles.result4k.mapFailure
+import org.http4k.connect.RemoteFailure
 import org.http4k.connect.amazon.CredentialsProvider
 import org.http4k.connect.amazon.core.model.Region
 import org.http4k.connect.amazon.s3.Http
@@ -19,6 +20,7 @@ import pl.sudneu.purple.domain.store.FetchDocument
 import pl.sudneu.purple.domain.PurpleError.FetchDocumentError
 import pl.sudneu.purple.domain.handleException
 import pl.sudneu.purple.domain.store.RemoteFileLocation
+import java.io.InputStream
 
 
 data class AwsParameters(
@@ -41,15 +43,19 @@ fun AwsFetchDocument(
       forcePathStyle = true,
       http = parameters.client
     )
-    bucket[BucketKey.of(fileLocation.uri.toString())]
-      .map { it?.reader()?.readText() }
+    bucket.namedStream(fileLocation.uri.toString())
+      .map { namedInputStream -> namedInputStream.first to namedInputStream.second?.reader()?.readText() }
       .mapFailure { err -> FetchDocumentError(err.message.orEmpty()) }
-      .flatMap(String?::toDocument)
+      .flatMap(Pair<String, String?>::toDocument)
   }.mapFailure { err -> FetchDocumentError(err.message) }
 }
 
-internal fun String?.toDocument(): Result<Document, FetchDocumentError> =
-  this?.let { Document(it).asSuccess() }
+private fun Pair<String, String?>.toDocument(): Result<Document, FetchDocumentError> =
+  this.second?.let { Document(first, it).asSuccess() }
   ?: FetchDocumentError("Document is not found").asFailure()
+
+private fun S3Bucket.namedStream(bucketKey: String): Result<Pair<String, InputStream?>, RemoteFailure> {
+  return this[BucketKey.of(bucketKey)].map { inputStream -> bucketKey to inputStream }
+}
 
 fun FetchDocument.Companion.withAws(parameters: AwsParameters) = AwsFetchDocument(parameters)

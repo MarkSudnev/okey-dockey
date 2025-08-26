@@ -22,10 +22,11 @@ class OpenAiEmbedDocumentShould {
   @Test
   fun `get embeddings from open ai`() {
     val httpClient: HttpHandler = { Response(OK).body(openAiResponseBody()) }
-    val document = Document("Hac vel parturient consectetur diam porta.")
+    val document = Document("alpha.txt","Hac vel parturient consectetur diam porta.",)
     val embedDocument = OpenAiEmbedDocument(httpClient, DummyDocumentSplitter())
 
     embedDocument(document) shouldBeSuccess { embeddedDocument ->
+      embeddedDocument.filename shouldBe document.filename
       embeddedDocument.chunks shouldHaveSize 2
       embeddedDocument.chunks.first().content shouldBe document.content
       embeddedDocument.chunks.first().embeddings shouldHaveSize 1152
@@ -38,7 +39,7 @@ class OpenAiEmbedDocumentShould {
   fun `return failure when http request was not successful`(statusCode: Int) {
     val status = Status.fromCode(statusCode) ?: INTERNAL_SERVER_ERROR
     val httpClient: HttpHandler = { Response(status).body("Server error") }
-    val document = Document("Hac vel parturient consectetur diam porta.")
+    val document = Document("alpha.txt", "Hac vel parturient consectetur diam porta.",)
     val embedDocument = OpenAiEmbedDocument(httpClient, DummyDocumentSplitter())
 
     embedDocument(document) shouldBeFailure EmbedDocumentError("Server error")
@@ -47,7 +48,7 @@ class OpenAiEmbedDocumentShould {
   @Test
   fun `return failure when text splitting was failed`() {
     val httpClient: HttpHandler = { Response(OK).body(openAiResponseBody()) }
-    val document = Document("Hac vel parturient consectetur diam porta.")
+    val document = Document("alpha.txt", "Hac vel parturient consectetur diam porta.",)
     val embedDocument = OpenAiEmbedDocument(httpClient) {
       EmbedDocumentError("some-error").asFailure()
     }
@@ -57,7 +58,7 @@ class OpenAiEmbedDocumentShould {
   @Test
   fun `return failure when text splitting throws an exception`() {
     val httpClient: HttpHandler = { Response(OK).body(openAiResponseBody()) }
-    val document = Document("Hac vel parturient consectetur diam porta.")
+    val document = Document("alpha.txt", "Hac vel parturient consectetur diam porta.",)
     val embedDocument = OpenAiEmbedDocument(httpClient) {
       error("unexpected exception")
     }
@@ -67,7 +68,7 @@ class OpenAiEmbedDocumentShould {
   @Test
   fun `return failure when http client throws exception`() {
     val httpClient: HttpHandler = { error("unexpected exception") }
-    val document = Document("Hac vel parturient consectetur diam porta.")
+    val document = Document("alpha.txt", "Hac vel parturient consectetur diam porta.",)
     val embedDocument = OpenAiEmbedDocument(httpClient, DummyDocumentSplitter())
 
     embedDocument(document) shouldBeFailure EmbedDocumentError("IllegalStateException: unexpected exception")

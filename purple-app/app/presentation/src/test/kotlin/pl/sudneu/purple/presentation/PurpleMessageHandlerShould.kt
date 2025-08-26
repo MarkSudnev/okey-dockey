@@ -43,7 +43,7 @@ class PurpleMessageHandlerShould {
 
   @BeforeEach
   fun setup() {
-    every { mockedFetchDocument.invoke(any()) } returns Document("Hello").asSuccess()
+    every { mockedFetchDocument.invoke(any()) } returns Document("alpha.txt","Hello").asSuccess()
     every { mockedEmbedDocument.invoke(any()) } returns randomEmbeddedDocument.asSuccess()
     every { mockedStoreDocument.invoke(any()) } returns Unit.asSuccess()
   }
