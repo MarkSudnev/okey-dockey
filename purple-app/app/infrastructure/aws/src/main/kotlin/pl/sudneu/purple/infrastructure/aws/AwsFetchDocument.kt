@@ -16,9 +16,9 @@ import org.http4k.connect.amazon.s3.model.BucketName
 import org.http4k.core.HttpHandler
 import org.http4k.core.Uri
 import pl.sudneu.purple.domain.Document
-import pl.sudneu.purple.domain.store.FetchDocument
 import pl.sudneu.purple.domain.PurpleError.FetchDocumentError
 import pl.sudneu.purple.domain.handleException
+import pl.sudneu.purple.domain.store.FetchDocument
 import pl.sudneu.purple.domain.store.RemoteFileLocation
 import java.io.InputStream
 

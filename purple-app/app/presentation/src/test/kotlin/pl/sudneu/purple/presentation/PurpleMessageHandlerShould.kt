@@ -20,11 +20,11 @@ import org.apache.kafka.common.TopicPartition
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import pl.sudneu.purple.domain.Document
-import pl.sudneu.purple.domain.store.DocumentMetadataReceiver
-import pl.sudneu.purple.domain.store.FetchDocument
 import pl.sudneu.purple.domain.PurpleError
+import pl.sudneu.purple.domain.store.DocumentMetadataReceiver
 import pl.sudneu.purple.domain.store.EmbedDocument
 import pl.sudneu.purple.domain.store.EmbeddedDocument
+import pl.sudneu.purple.domain.store.FetchDocument
 import pl.sudneu.purple.domain.store.ReceiveDocumentMetadata
 import pl.sudneu.purple.domain.store.StoreDocument
 import pl.sudneu.purple.logging.ErrorHappened
