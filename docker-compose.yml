@@ -9,7 +9,7 @@ services:
       - ./models:/root/.cache/llama.cpp/
     command: -hf ggml-org/gemma-3-1b-it-GGUF --embeddings --pooling mean --port 8090 --host 0.0.0.0
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8090"]
+      test: ["CMD", "curl", "--fail", "http://localhost:8090"]
       interval: 10s
       timeout: 30s
       retries: 20
