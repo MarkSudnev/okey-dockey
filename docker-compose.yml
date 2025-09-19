@@ -7,7 +7,7 @@ services:
       - "8090:8090"
     volumes:
       - ./models:/root/.cache/llama.cpp/
-    command: -hf ggml-org/gemma-3-1b-it-GGUF --embeddings --pooling mean --port 8090 --host 0.0.0.0
+    command: -hf unsloth/Llama-3.2-3B-Instruct-GGUF --embeddings --pooling mean --port 8090 --host 0.0.0.0
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8090"]
       interval: 10s
