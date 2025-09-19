@@ -1,6 +1,13 @@
 package pl.sudneu.purple.presentation
 
 import org.http4k.core.HttpHandler
+import org.http4k.core.Method
+import org.http4k.core.then
+import org.http4k.filter.AllowAll
+import org.http4k.filter.CorsPolicy
+import org.http4k.filter.OriginPolicy
+import org.http4k.filter.ServerFilters
+import org.http4k.filter.ServerFilters.Cors
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.routes
 import pl.sudneu.purple.domain.retrieve.DocumentFinder
@@ -15,5 +22,17 @@ fun PurpleApi(datasource: DataSource, client: HttpHandler): RoutingHttpHandler {
     embedDocumentQuery = EmbedDocumentQuery.withOpenAi(client),
     retrieveDocuments = RetrieveDocuments.withPostgresql(datasource)
   )
-  return routes(SearchDocumentsRoute(searchDocuments))
+
+  val policy = CorsPolicy(
+    originPolicy = OriginPolicy.AllowAll(),
+    headers = listOf("origin", "Content-Type", "Content-Length", "Accept", "X-Requested-With"),
+    methods = Method.entries,
+    credentials = true,
+    maxAge = 3600
+  )
+  val application = routes(SearchDocumentsRoute(searchDocuments))
+  return ServerFilters
+    .CatchAll()
+    .then(Cors(policy))
+    .then(application)
 }
