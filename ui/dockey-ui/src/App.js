@@ -8,18 +8,23 @@ function App() {
     const [loading, setLoading] = useState(false);
     const [searchResults, setSearchResults] = useState([]);
     const [searchExecuted, setSearchExecuted] = useState(false);
+    const [fetchFailed, setFetchFailed] = useState(false);
 
     const onSearchButtonClicked = () => {
         setLoading(true);
+        setFetchFailed(false);
         fetch(`http://localhost:8095/api/v1/documents?q=${keyword}`)
             .then(res => res.json())
             .then(data => {
-                console.log(data)
-                setSearchResults(data)
+                console.log(data);
+                setSearchResults(data);
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                setFetchFailed(true);
+                console.log(err);
+            })
             .finally(() => {
-                setLoading(false)
+                setLoading(false);
                 setSearchExecuted(true);
             });
     }
@@ -55,7 +60,7 @@ function App() {
                             results={searchResults}/>
                     </div>
                 }
-                {searchExecuted && searchResults.length === 0 &&
+                {searchExecuted && !fetchFailed && searchResults.length === 0 &&
                     <div className="alert">
                         <p><strong>Notice:</strong> Nothing is found</p>
                     </div>
@@ -65,13 +70,14 @@ function App() {
                         <p><strong>Heads up:</strong> Try to find document by semantic. Don't use exact content</p>
                     </div>
                 }
+                {!loading && fetchFailed &&
+                    <div className="alert danger">
+                        <p><strong>Error:</strong> Failed to fetch search results</p>
+                    </div>
+                }
             </div>
         </div>
     );
-}
-
-function searchDocuments(keyword) {
-
 }
 
 export default App;
