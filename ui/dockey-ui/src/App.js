@@ -9,11 +9,16 @@ function App() {
     const [searchResults, setSearchResults] = useState([]);
     const [searchExecuted, setSearchExecuted] = useState(false);
     const [fetchFailed, setFetchFailed] = useState(false);
+    const apiUrl = "http://localhost:8095/api/v1/documents"
+    const examples = [
+        "First album after break",
+        "City found in a desert"
+    ].map(item => <span key={item} className="badge accent m-5" onClick={() => onExampleClicked(item)}>{item}</span>);
 
-    const onSearchButtonClicked = () => {
+    const searchDocuments = url => {
         setLoading(true);
         setFetchFailed(false);
-        fetch(`http://localhost:8095/api/v1/documents?q=${keyword}`)
+        fetch(url)
             .then(res => res.json())
             .then(data => {
                 console.log(data);
@@ -27,6 +32,17 @@ function App() {
                 setLoading(false);
                 setSearchExecuted(true);
             });
+    }
+
+    const onSearchButtonClicked = () => {
+        const url = `${apiUrl}?q=${keyword}`;
+        searchDocuments(url);
+    }
+
+    const onExampleClicked = (_keyword) => {
+        setKeyword(_keyword);
+        const url = `${apiUrl}?q=${keyword}`;
+        searchDocuments(url);
     }
 
     return (
@@ -67,8 +83,18 @@ function App() {
                 }
                 {!searchExecuted &&
                     <div className="alert accent">
-                        <p><strong>Heads up:</strong> Try to find document by semantic. Don't use exact content</p>
+                        <p>
+                            <strong>Heads up:</strong> Try to find document by semantic.
+                        </p>
                     </div>
+                }
+                {!searchExecuted &&
+                    <div className="panel pv-15">
+                        <ul>
+                            {examples}
+                        </ul>
+                    </div>
+
                 }
                 {!loading && fetchFailed &&
                     <div className="alert danger">
