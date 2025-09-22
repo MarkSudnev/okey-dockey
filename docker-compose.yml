@@ -39,21 +39,37 @@ services:
       kafka:
         condition: service_healthy
 
-  minio-init:
-    image: minio/mc:latest
-    container_name: minio-init
+  # minio-init:
+  #   image: minio/mc:latest
+  #   container_name: minio-init
+  #   depends_on:
+  #     minio:
+  #       condition: service_healthy
+  #   entrypoint: >
+  #     /bin/sh -c "
+  #     /usr/bin/mc alias set myminio http://minio:9000 ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY};
+  #     /usr/bin/mc mb myminio/dockey-bucket;
+  #     /usr/bin/mc policy set public myminio/dockey-bucket;
+  #     /usr/bin/mc event add myminio/dockey-bucket arn:minio:sqs::ONE:kafka --event put;
+  #     /usr/bin/mc admin service restart myminio;
+  #     exit 0;
+  #     "
+
+  terraform:
+    image: hashicorp/terraform:1.12.2
+    container_name: terraform
     depends_on:
       minio:
         condition: service_healthy
-    entrypoint: >
-      /bin/sh -c "
-      /usr/bin/mc alias set myminio http://minio:9000 ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY};
-      /usr/bin/mc mb myminio/dockey-bucket;
-      /usr/bin/mc policy set public myminio/dockey-bucket;
-      /usr/bin/mc event add myminio/dockey-bucket arn:minio:sqs::ONE:kafka --event put;
-      /usr/bin/mc admin service restart myminio;
-      exit 0;
-      "
+    environment:
+      MINIO_ENDPOINT: minio:9000
+      MINIO_USER: ${AWS_ACCESS_KEY_ID}
+      MINIO_PASSWORD: ${AWS_SECRET_ACCESS_KEY}
+    working_dir: /workspace
+    volumes:
+      - ./terraform/minio/main.tf:/workspace/main.tf
+    entrypoint: [ "/bin/sh", "-c" ]
+    command: [ "terraform init; terraform apply --auto-approve" ]
 
   kafka:
     image: apache/kafka:3.9.1
