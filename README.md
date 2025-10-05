@@ -17,7 +17,7 @@ Minio with kafka notification enabled. `dockey-bucket` is set up to emit events 
 See [purple-app](purple-app/README.md)
 
 ## Vector Storage
-PostgreSQL with pgVector extension enabled. There are two scripts `create-extension.sql` and `create-table.sql` in the `vector-storage` directory to setup database. Be careful with vector length you create a table.
+PostgreSQL with pgVector extension enabled. There are two scripts `create-extension.sql` and `create-table.sql` in the `vector-storage` directory to setup database. Be careful with vector length you create a table. See [vector-storage](vector-storage/README.md)
 
 
 ## Flow Description
@@ -55,7 +55,7 @@ Run the system
 docker compose up -d
 ```
 At the first run, the model will be downloaded by llama.cpp.  
-Wait for all containers are up and ready.
+Wait for all containers are up and ready. Be patient
 
 #### Workflow
 - Go to minio interface `http://localhost:9001` use **user/password** to log in. Open `dockey-bucket` and upload `.txt` file there. It would be better if you upload few files and each file contains several sentences. Feel free to use text documents from `examples` folder.
