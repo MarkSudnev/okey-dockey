@@ -13,18 +13,21 @@ fun PostgresqlStoreDocument(dataSource: DataSource): StoreDocument =
   StoreDocument { embeddedDocument ->
     resultFrom {
       embeddedDocument.chunks.forEach { chunk ->
-        dataSource.connection.use { conn -> conn.executeInsert(chunk) }
+        dataSource.connection.use { conn ->
+          conn.executeInsert(embeddedDocument.filename.value, chunk)
+        }
       }
     }.mapFailure { exception ->
       StoreDocumentError("${exception::class.simpleName}: ${exception.message}")
     }
   }
 
-private fun Connection.executeInsert(chunk: EmbeddedDocumentChunk) {
-  prepareStatement("INSERT INTO documents (content, embedding) VALUES (?, ?)")
+private fun Connection.executeInsert(filename: String, chunk: EmbeddedDocumentChunk) {
+  prepareStatement("INSERT INTO documents (filename, content, embedding) VALUES (?, ?, ?)")
     .use { stmt ->
-      stmt.setString(1, chunk.content.value)
-      stmt.setObject(2, chunk.embeddings.toDoubleArray(), ARRAY)
+      stmt.setString(1, filename)
+      stmt.setString(2, chunk.content.value)
+      stmt.setObject(3, chunk.embeddings.toDoubleArray(), ARRAY)
       stmt.executeUpdate()
     }
 }

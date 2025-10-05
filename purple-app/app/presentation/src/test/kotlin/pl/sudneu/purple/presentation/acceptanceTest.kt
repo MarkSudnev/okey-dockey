@@ -43,8 +43,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import org.testcontainers.containers.PostgreSQLContainer
 import pl.sudneu.purple.domain.store.DocumentMetadataReceiver
-import pl.sudneu.purple.domain.store.FetchDocument
 import pl.sudneu.purple.domain.store.EmbedDocument
+import pl.sudneu.purple.domain.store.FetchDocument
 import pl.sudneu.purple.domain.store.StoreDocument
 import pl.sudneu.purple.infrastructure.aws.withAws
 import pl.sudneu.purple.infrastructure.openai.SplitDocument
@@ -109,6 +109,7 @@ class PurpleApplicationTest {
       connection.createStatement().execute(
         """CREATE TABLE IF NOT EXISTS documents (
         id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+        filename VARCHAR NOT NULL,
         content VARCHAR NOT NULL,
         embedding vector(1152) NOT NULL);"""
       )
@@ -142,7 +143,7 @@ class PurpleApplicationTest {
     val response = client(Request(GET, "/api/v1/documents?q=people%20suffered%20from%20fire"))
 
     response shouldHaveStatus OK
-    searchDocumentsResponseBodyLens(response) shouldContain text
+    searchDocumentsResponseBodyLens(response).map(DocumentResponse::content) shouldContain text
   }
 
   companion object {
@@ -191,4 +192,4 @@ private val text = """Fire Department. One concertgoer was pronounced dead at th
   upper roof structure were found on the street after the tornado. Following the collapse,
   the lack of safety protocols despite warning became the subject of multiple lawsuits.""".trimMargin()
 
-private val searchDocumentsResponseBodyLens = Body.auto<List<String>>().toLens()
+private val searchDocumentsResponseBodyLens = Body.auto<List<DocumentResponse>>().toLens()

@@ -25,7 +25,7 @@ fun OpenAiEmbedDocument(client: HttpHandler, splitDocument: SplitDocument): Embe
     zip(documentChunks, embeddings) { chunks, embs ->
       chunks.mapIndexed { index, chunk -> EmbeddedDocumentChunk(chunk, embs[index]) }
     }
-      .map { chunks -> EmbeddedDocument(chunks) }
+      .map { chunks -> EmbeddedDocument(document.filename, chunks) }
       .mapFailure { error -> PurpleError.EmbedDocumentError(error.message) }
   }
 

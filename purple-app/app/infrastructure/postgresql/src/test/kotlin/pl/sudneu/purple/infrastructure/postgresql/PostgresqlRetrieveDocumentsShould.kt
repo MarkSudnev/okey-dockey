@@ -28,6 +28,7 @@ class PostgresqlRetrieveDocumentsShould : PostgresqlRunner() {
       connection.createStatement().execute(
         """CREATE TABLE IF NOT EXISTS documents (
         id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+        filename VARCHAR NOT NULL,
         content VARCHAR NOT NULL,
         embedding vector($vectorSize) NOT NULL);"""
       )
@@ -45,10 +46,11 @@ class PostgresqlRetrieveDocumentsShould : PostgresqlRunner() {
   fun `fetch documents by embedding`() {
     datasource.connection.use { conn ->
       testRecords.forEach { record ->
-        conn.prepareStatement("INSERT INTO documents (content, embedding) VALUES (?, ?)")
+        conn.prepareStatement("INSERT INTO documents (filename, content, embedding) VALUES (?, ?, ?)")
           .use { stmt ->
-            stmt.setString(1, record.first)
-            stmt.setObject(2, record.second, ARRAY)
+            stmt.setString(1, record.filename)
+            stmt.setString(2, record.content)
+            stmt.setObject(3, record.embedding, ARRAY)
             stmt.executeUpdate()
           }
       }
@@ -78,8 +80,10 @@ class PostgresqlRetrieveDocumentsShould : PostgresqlRunner() {
 }
 
 private val testRecords = listOf(
-  "Elementum posuere etiam mauris magna." to listOf(0.1, 0.2, 0.3).toDoubleArray(),
-  "Sagittis tortor adipiscing lobortis velit venenatis mauris." to listOf(0.9, 0.9, 0.9).toDoubleArray(),
-  "Massa viverra nec nostra arcu rutrum aliquet ligula." to listOf(0.3, 0.2, 0.1).toDoubleArray(),
-  "Mattis dolor odio elit cubilia." to listOf(0.1, 0.001, 0.0009).toDoubleArray(),
+  TestRecord("alpha.txt", "Elementum posuere etiam mauris magna.", listOf(0.1, 0.2, 0.3).toDoubleArray()),
+  TestRecord("beta.txt", "Sagittis tortor adipiscing lobortis velit venenatis mauris.", listOf(0.9, 0.9, 0.9).toDoubleArray()),
+  TestRecord("gamma.txt", "Massa viverra nec nostra arcu rutrum aliquet ligula.", listOf(0.3, 0.2, 0.1).toDoubleArray()),
+  TestRecord("delta.txt", "Mattis dolor odio elit cubilia.", listOf(0.1, 0.001, 0.0009).toDoubleArray()),
 )
+
+private data class TestRecord(val filename: String, val content: String, val embedding: DoubleArray)

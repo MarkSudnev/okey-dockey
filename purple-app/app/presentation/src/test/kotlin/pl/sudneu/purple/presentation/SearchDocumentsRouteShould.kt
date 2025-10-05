@@ -2,6 +2,7 @@ package pl.sudneu.purple.presentation
 
 import dev.forkhandles.result4k.asFailure
 import dev.forkhandles.result4k.asSuccess
+import io.kotest.matchers.shouldBe
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Status.Companion.BAD_REQUEST
@@ -20,17 +21,17 @@ class SearchDocumentsRouteShould {
 
   @Test
   fun `return documents contents when they were found`() {
-    val searchDocuments = SearchDocuments {
-      listOf(
-        Document("In diam sem aenean senectus."),
-        Document("Convallis convallis curae habitasse."),
-        Document("Facilisis auctor nascetur ex habitasse ipsum posuere.")
-      ).asSuccess()
-    }
+    val documents = listOf(
+      Document("alpha.txt", "In diam sem aenean senectus.",),
+      Document("beta.txt", "Convallis convallis curae habitasse.",),
+      Document("gamma.txt", "Facilisis auctor nascetur ex habitasse ipsum posuere.",)
+    )
+    val searchDocuments = SearchDocuments { documents.asSuccess() }
+    val expectedResponse = documents.map(Document::toDocumentResponse)
     val client = SearchDocumentsRoute(searchDocuments)
     with(client(Request(GET, "/api/v1/documents?q=lorem&n=3"))) {
       this shouldHaveStatus OK
-      this shouldHaveBody """["In diam sem aenean senectus.","Convallis convallis curae habitasse.","Facilisis auctor nascetur ex habitasse ipsum posuere."]"""
+      documentsResponseBodyLens(this) shouldBe expectedResponse
     }
   }
 

@@ -1,7 +1,6 @@
 package pl.sudneu.purple.domain.store
 
 import dev.forkhandles.result4k.flatMap
-import pl.sudneu.purple.domain.store.FetchDocument
 import pl.sudneu.purple.domain.handleException
 
 fun DocumentMetadataReceiver(

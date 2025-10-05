@@ -12,6 +12,7 @@ import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable
 import pl.sudneu.purple.domain.PurpleError.StoreDocumentError
 import pl.sudneu.purple.domain.store.EmbeddedDocument
 import pl.sudneu.purple.domain.store.EmbeddedDocumentChunk
+import pl.sudneu.purple.shared.NonBlankString
 import kotlin.random.Random
 
 private const val vectorSize = 1152
@@ -26,6 +27,7 @@ class PostgresqlStoreDocumentShould : PostgresqlRunner() {
       connection.createStatement().execute(
         """CREATE TABLE IF NOT EXISTS documents (
         id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+        filename VARCHAR NOT NULL,
         content VARCHAR NOT NULL,
         embedding vector($vectorSize) NOT NULL);"""
       )
@@ -42,7 +44,8 @@ class PostgresqlStoreDocumentShould : PostgresqlRunner() {
   @Test
   fun `store document in database`() {
     val embeddedDocument = EmbeddedDocument(
-      listOf(EmbeddedDocumentChunk("Hello", randomEmbeddings))
+      NonBlankString("alpha.txt"),
+        listOf(EmbeddedDocumentChunk("Hello", randomEmbeddings)),
     )
     val storeDocument = PostgresqlStoreDocument(datasource)
     storeDocument(embeddedDocument).shouldBeSuccess()
@@ -53,18 +56,20 @@ class PostgresqlStoreDocumentShould : PostgresqlRunner() {
         .prepareStatement("SELECT * FROM documents")
         .executeQuery()
       result.next()
-      result.getString(2) shouldBe "Hello"
-      result.getObject(3, PGvector::class.java).toArray() shouldHaveSize vectorSize
+      result.getString(2) shouldBe "alpha.txt"
+      result.getString(3) shouldBe "Hello"
+      result.getObject(4, PGvector::class.java).toArray() shouldHaveSize vectorSize
     }
   }
 
   @Test
   fun `return failure when vector size is invalid`() {
     val embeddedDocument = EmbeddedDocument(
-      listOf(EmbeddedDocumentChunk(
-        "Hello",
-        listOf(0.7634587365, 0.364583)
-      ))
+      NonBlankString("alpha.txt"),
+        listOf(EmbeddedDocumentChunk(
+          "Hello",
+          listOf(0.7634587365, 0.364583)
+        )),
     )
     val storeDocument = PostgresqlStoreDocument(datasource)
     storeDocument(embeddedDocument) shouldBeFailure StoreDocumentError(

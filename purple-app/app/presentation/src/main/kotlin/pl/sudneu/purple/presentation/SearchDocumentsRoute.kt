@@ -21,7 +21,7 @@ import pl.sudneu.purple.shared.NonBlankString
 import pl.sudneu.purple.shared.PositiveInteger
 import pl.sudneu.purple.shared.toPositiveInteger
 
-val documentsResponseBodyLens = Body.auto<List<String>>().toLens()
+val documentsResponseBodyLens = Body.auto<List<DocumentResponse>>().toLens()
 
 val documentQueryRequestLens = Query
   .nonBlankString()
@@ -40,8 +40,9 @@ fun SearchDocumentsRoute(searchDocuments: SearchDocuments): RoutingHttpHandler =
 
     handleException {
       searchDocuments(documentQuery)
-        .map { documents -> documents.map { doc -> doc.content.value } }
+        .map { documents -> documents.map { doc -> DocumentResponse(doc.filename.value, doc.content.value) } }
         .map { results -> Response(OK).with(documentsResponseBodyLens of results) }
     }
       .recover { Response(INTERNAL_SERVER_ERROR).body(it.message) }
   }
+

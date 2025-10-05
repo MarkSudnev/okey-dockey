@@ -38,6 +38,6 @@ Wait for all containers are up and ready.
 
 
 ## TODO
-- [ ] Add filenames to search documents result
+- [x] Add filenames to search documents result
 - [ ] Use liquibase for migration
 - [ ] Add monitoring
